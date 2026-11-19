@@ -1,37 +1,9 @@
-# M3 English Learning Platform v17.26
+# Lesson-M3 — บทเรียนสำเร็จรูป ภาษาอังกฤษ ม.3 (อ23102, Get Involved! M3)
 
-Main Portal: index.html
-Student: student.html
-Teacher: teacherdashboard.html
-Global style: style.css
-Portal router: js/portal.js
-Unit data: js/data.js
-Student logic: js/student.js
-Teacher logic: js/teacher.js
+เว็บ: https://pratchayapiw.github.io/Lesson-M3/
 
-Teacher: Miss Pratchaya Songbanpot / ปรัชญา ทรงบรรพต / ครูปิ้ว Piw
-Subject: English
-Current class: M.3
-Portal supports M.1–M.6 for future expansion.
-
-Demo PIN
-- Student: 2569
-- Teacher: 9999
-
-Unit 1: Present Time
-- Vocabulary
-- Present Simple
-- Present Continuous
-- Stative Verbs
-- Grammar Practice / Games
-- End-of-Unit Test
-
-Test rules
-- 60 seconds per question
-- Random question order
-- Random option order
-- No duplicate question inside a round
-- Auto-advance on timeout
-- Completed test is blocked for the same student identity in the browser
-
-Prototype storage uses localStorage/sessionStorage. For production deployment, connect authentication and results to Firebase/Supabase.
+- `index.html` หน้าแรก / เลือกผู้ใช้งาน (นักเรียน, ครูใช้รหัส) / สารบัญ
+- `unit6/` Unit 6 Experience (ต้นแบบ): ศัพท์ ฟัง อ่าน ไวยากรณ์ พูด เขียน, ข้อสอบหลังเรียน 20 ข้อ, สไลด์สอน + เฉลยแอนิเมชัน
+- `assets/` ไอคอนและฉากพื้นหลังของแต่ละหน่วย
+- `config.js` การเชื่อมต่อ Supabase (ตาราง m3_results)
+- `legacy-v17/` เว็บเวอร์ชันเดิม (v17.26) เก็บไว้
