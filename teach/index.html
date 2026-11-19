@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teaching Hub · Get Involved! M3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="teach.css">
+</head>
+<body>
+<!-- unit picker -->
+<div class="pickpage hidden" id="pickpage">
+  <div class="pk-wrap">
+    <div class="pk-head">
+      <div class="pk-logo">📽️</div>
+      <div><h1>Teaching Hub · สไลด์สอน ม.3</h1><p>Get Involved! M3 · อ23102 · ครูปรัชญา ทรงบรรพต · เลือกหน่วยการเรียนรู้</p></div>
+      <div class="sp"></div>
+      <a class="pk-back hidden" id="pkHome" href="../index.html">🏠 กลับหน้าบทเรียน</a>
+    </div>
+    <div class="pk-grid" id="pkGrid"></div>
+    <div class="pk-help">
+      <b>วิธีใช้ระหว่างสอน</b> · กด <kbd>→</kbd> หรือ <kbd>Space</kbd> (หรือรีโมตพรีเซนต์) เพื่อเฉลย/แสดงทีละขั้น เมื่อเฉลยครบจะไปสไลด์ถัดไป ·
+      <kbd>←</kbd> ย้อน · <kbd>A</kbd> เฉลยทั้งหมด · <kbd>H</kbd> ซ่อนเฉลย · <kbd>T</kbd> จับเวลา · <kbd>R</kbd> สุ่มเลขที่ · <kbd>F</kbd> เต็มจอ · <kbd>N</kbd> เปิด/ปิดบทสอนครู ·
+      แตะการ์ดคำศัพท์เพื่อฟังเสียงและดูคำแปล · ปุ่ม 🧰 เครื่องมือ มีจับเวลา สุ่มเลขที่ คะแนนกลุ่ม แฟลชการ์ด เกมแยกประเภท จับผิดประโยค สร้างสูตร เรียงประโยค และรายการสื่อการสอน
+    </div>
+  </div>
+</div>
+
+<!-- teaching app -->
+<div class="app hidden" id="app">
+  <div class="top">
+    <div class="brand"><button class="home" id="homeBtn" title="เลือกหน่วย">☰</button><span id="brandT"></span></div>
+    <div class="phases" id="phases"></div>
+    <div class="clock" title="เวลาคาบเรียน"><span>⏱</span><span class="t" id="lt">00:00</span><button class="ibtn" id="ltBtn">เริ่มคาบ</button><button class="ibtn" id="ltReset" title="รีเซ็ต">↺</button></div>
+    <button class="ibtn on" id="notesBtn">📝<span class="t"> บทสอน</span></button>
+    <button class="ibtn" id="toolsBtn">🧰<span class="t"> เครื่องมือ</span></button>
+    <button class="ibtn on" id="animBtn" title="เปิด/ปิดแอนิเมชัน">🎬<span class="t"> แอนิเมชัน</span></button>
+    <button class="ibtn" id="fsBtn">⛶<span class="t"> เต็มจอ</span></button>
+  </div>
+  <div class="main" id="main">
+    <div class="stage" id="stage">
+      <div class="frame" id="frame"><div class="slide" id="slide"></div></div>
+      <button class="nav l" id="prev" aria-label="ก่อนหน้า">‹</button>
+      <button class="nav r" id="next" aria-label="ถัดไป">›</button>
+      <div class="counter" id="counter"></div>
+      <div class="quick" id="quick"></div>
+    </div>
+    <aside class="notes" id="notes"></aside>
+  </div>
+  <div class="thumbs" id="thumbs"></div>
+</div>
+
+<!-- tools -->
+<div class="ov" id="ov">
+  <div class="panel">
+    <div class="ph2"><div class="tabs" id="tabs"></div><button class="x" id="closeOv">✕ กลับสไลด์</button></div>
+    <div class="tbody">
+      <section class="tool" id="t-timer">
+        <h2 class="tt">⏲️ Activity Timer</h2><p class="sub">จับเวลากิจกรรม (Think · Pair · Share ฯลฯ) มีเสียงเตือนเมื่อหมดเวลา</p>
+        <div class="row" id="tPresets"></div>
+        <div class="tdisp" id="tDisp">02:00</div><div class="tbar"><i id="tBar" style="width:100%"></i></div>
+        <div class="row" style="justify-content:center"><button class="btn big" id="tStart">▶ Start</button><button class="btn big alt" id="tReset">↺ Reset</button><button class="btn alt" id="tMinus">−30s</button><button class="btn alt" id="tPlus">+30s</button></div>
+      </section>
+      <section class="tool" id="t-picker">
+        <h2 class="tt">🎯 Random Picker</h2><p class="sub">สุ่มเลขที่นักเรียนหรือกลุ่ม (คนที่ถูกเลือกแล้วจะไม่ถูกสุ่มซ้ำจนกว่าจะเริ่มใหม่)</p>
+        <div class="row"><select id="pMode"><option value="num">เลขที่นักเรียน</option><option value="team">กลุ่ม (จากหน้าคะแนนกลุ่ม)</option></select>
+          <label>จำนวนนักเรียน <input type="number" id="pN" value="40" min="2" max="60" style="width:90px"></label><button class="btn alt" id="pReset">↺ เริ่มใหม่</button></div>
+        <div class="pick" id="pDisp">?</div><div class="row" style="justify-content:center"><button class="btn big" id="pGo">🎲 สุ่ม!</button></div><div class="picked" id="pList"></div>
+      </section>
+      <section class="tool" id="t-score">
+        <h2 class="tt">🏆 Team Scoreboard</h2><p class="sub">ให้คะแนนกลุ่มตลอดคาบ · แก้ชื่อกลุ่มได้ · ระบบจำคะแนนไว้ในเครื่องนี้</p>
+        <div class="row" style="margin-bottom:12px"><label>จำนวนกลุ่ม <input type="number" id="sN" value="6" min="2" max="10" style="width:80px"></label><button class="btn alt" id="sReset">รีเซ็ตคะแนน</button></div>
+        <div class="teams" id="teams"></div>
+      </section>
+      <section class="tool" id="t-flash">
+        <h2 class="tt">🃏 Flashcards</h2><p class="sub">แตะการ์ดเพื่อเฉลยคำแปล (และฟังเสียง) · แตะอีกครั้งไปใบถัดไป · โหมดทายคำ: ซ่อนคำศัพท์ ให้นักเรียนดูรูปแล้วพูดคำ</p>
+        <div class="row"><button class="btn alt" id="fPrev">‹ ก่อนหน้า</button><button class="btn" id="fSay">🔊 ฟังเสียง</button><button class="btn alt" id="fNext">ถัดไป ›</button><button class="btn alt" id="fShuf">🔀 สลับ</button><label style="font-family:Kanit"><input type="checkbox" id="fQuiz"> โหมดทายคำ (ซ่อนคำ)</label><span id="fNo" style="font-family:Kanit;margin-left:auto"></span></div>
+        <div class="flash" id="flash"></div>
+      </section>
+      <section class="tool" id="t-sort">
+        <h2 class="tt" id="soT">🔀</h2><p class="sub" id="soSub"></p>
+        <div class="row"><span id="soCount" style="font-family:Kanit;font-size:18px"></span><span style="flex:1"></span><span id="soScore" style="font-family:Kanit;font-size:18px"></span></div>
+        <div class="scard" id="soCard"></div><div class="sbtns" id="soBtns"></div><div class="fb" id="soFb"></div>
+        <div class="row" style="justify-content:center"><button class="btn" id="soNext">ข้อต่อไป →</button></div>
+      </section>
+      <section class="tool" id="t-detect">
+        <h2 class="tt">🚨 Grammar Detective</h2><p class="sub">ให้กลุ่มหาจุดผิด → กด “🔍 ชี้จุดผิด” → กด “✅ เฉลย” เพื่อดูประโยคที่ถูกและเหตุผล</p>
+        <div class="det" id="detList"></div>
+      </section>
+      <section class="tool" id="t-puzzle">
+        <h2 class="tt" id="pzT">🧩 Build the Rule</h2><p class="sub">แตะชิ้นส่วน แล้วแตะช่องที่ต้องการวาง · ให้ตัวแทนกลุ่มออกมาวางบนจอ</p>
+        <div id="pzRows"></div><div class="pieces" id="pieces"></div><div class="fb" id="pzFb"></div>
+        <div class="row" style="justify-content:center"><button class="btn alt" id="pzReset">↺ เริ่มใหม่</button></div>
+      </section>
+      <section class="tool" id="t-scramble">
+        <h2 class="tt">🔤 Sentence Scramble</h2><p class="sub">แตะคำเรียงให้เป็นประโยคที่ถูกต้อง · แตะคำในช่องคำตอบเพื่อเอาออก</p>
+        <div class="row"><span id="scrNo" style="font-family:Kanit;font-size:18px"></span><span style="flex:1"></span><button class="btn alt" id="scrReset">↺ เริ่มข้อนี้ใหม่</button><button class="btn alt" id="scrAns">🔑 เฉลย</button><button class="btn" id="scrNext">ข้อต่อไป →</button></div>
+        <div class="scr-out" id="scrOut"></div><div class="row" id="scrIn" style="justify-content:center"></div><div class="fb" id="scrFb"></div>
+      </section>
+      <section class="tool" id="t-media">
+        <h2 class="tt">📦 สื่อการสอนของหน่วยนี้</h2><p class="sub">ติ๊ก ✓ ตอนเตรียมของก่อนเข้าห้อง (ระบบจำไว้ในเครื่องนี้)</p>
+        <div class="mgrid"><div><div class="mhead" style="background:#8a5a2b">✋ สื่อทำมือ (Hands-on)</div><div id="mHand"></div></div><div><div class="mhead" style="background:#2f6fb3">💻 สื่อออนไลน์ (Online)</div><div id="mOnline"></div></div></div>
+        <div class="row" style="margin-top:12px"><span id="mProg" style="font-family:Kanit;font-size:17px"></span><span style="flex:1"></span><button class="btn alt" id="mReset">ล้างเครื่องหมาย ✓</button></div>
+      </section>
+    </div>
+  </div>
+</div>
+<canvas class="confetti" id="conf"></canvas>
+<script>window.TEACH_UNITS={};window.TEACH_HOME="../index.html";</script>
+<script src="units/u1.js"></script>
+<script src="units/u2.js"></script>
+<script src="units/u3.js"></script>
+<script src="units/u4.js"></script>
+<script src="units/u5.js"></script>
+<script src="units/u6.js"></script>
+<script src="units/u7.js"></script>
+<script src="units/u8.js"></script>
+<script src="teach.js"></script>
+</body>
+</html>

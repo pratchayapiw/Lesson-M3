@@ -180,7 +180,7 @@ const ICONS = { home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 
 const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
 function nav(v) {
   const items = role === "teacher"
-    ? [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], [OPEN.dir + "#teacher", "slides", "สไลด์สอน"], [OPEN.dir + "#teacher-results", "prog", "ผลนักเรียน"], [OPEN.dir + "#map", "test", "ดูบทเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
+    ? [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "สไลด์สอน"], [OPEN.dir + "#teacher-results", "prog", "ผลนักเรียน"], [OPEN.dir + "#map", "test", "ดูบทเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
     : [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], [OPEN.dir + "#slides", "slides", "Lesson Slides"], [OPEN.dir + "#map", "test", "Practice & Tests"], [OPEN.dir + "#summary", "prog", "My Progress"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]];
   $("#nav").innerHTML = items.map(x => x[0] === "hr" ? "<hr>" : `<a href="${x[0]}" class="${x[0] === "#" + v ? "on" : ""}">${svg(x[1])}${x[2]}</a>`).join("");
   const name = role === "teacher" ? "Kru Pratchaya" : me ? me.name : "เลือกผู้ใช้งาน";
@@ -208,12 +208,12 @@ function viewHome() {
   const C = 2 * Math.PI * 54;
   const left = role === "teacher"
     ? `<div class="card"><h3>📽️ สไลด์สอน Unit 6</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit6.svg)"><img src="assets/icons/unit6.png" alt=""></div>
-        <div style="flex:1;min-width:0"><b>Unit 6: Experience</b><small>25 สไลด์ · โน้ตครู · แอนิเมชันเฉลย</small></div><a class="go" href="${u.dir}#teacher" aria-label="เปิดสไลด์สอน">▶</a></div></div>`
+        <div style="flex:1;min-width:0"><b>Unit 6: Experience</b><small>Teaching Hub 8 หน่วย · บทสอน · เครื่องมือในห้อง</small></div><a class="go" href="teach/#u6" aria-label="เปิดสไลด์สอน">▶</a></div></div>`
     : `<div class="card"><h3>📖 Continue Learning</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit6.svg)"><img src="assets/icons/unit6.png" alt=""></div>
         <div style="flex:1;min-width:0"><b>Unit 6: Experience</b><small>Present perfect · ever / never</small><div class="bar"><i style="width:${me ? pct : 0}%"></i></div><small style="color:var(--muted)">${me ? pct + "% ของเป้าหมาย" : "เลือกผู้ใช้งานก่อนเริ่ม"}</small></div>
         <a class="go" href="${me ? u.dir + "#map" : "#login"}" aria-label="เรียนต่อ">▶</a></div></div>`;
   const mid = role === "teacher"
-    ? `<div class="card"><h3>🎯 เมนูครู</h3><ul class="goals"><li><span class="ck">📽️</span><a href="${u.dir}#teacher">เปิดสไลด์สอน + เฉลย</a></li><li><span class="ck">📊</span><a href="${u.dir}#teacher-results">ดูผลนักเรียน / ดาวน์โหลด CSV</a></li><li><span class="ck">📖</span><a href="${u.dir}#map">ทดลองใช้บทเรียน (ไม่ส่งคะแนน)</a></li><li><span class="ck">🗂️</span><a href="#contents">สารบัญทุกหน่วย</a></li></ul></div>`
+    ? `<div class="card"><h3>🎯 เมนูครู</h3><ul class="goals"><li><span class="ck">📽️</span><a href="teach/">Teaching Hub สไลด์สอน 8 หน่วย</a></li><li><span class="ck">🗝️</span><a href="${u.dir}#teacher">สไลด์ Unit 6 ในบทเรียน + เฉลย</a></li><li><span class="ck">📊</span><a href="${u.dir}#teacher-results">ดูผลนักเรียน / ดาวน์โหลด CSV</a></li><li><span class="ck">📖</span><a href="${u.dir}#map">ทดลองใช้บทเรียน (ไม่ส่งคะแนน)</a></li><li><span class="ck">🗂️</span><a href="#contents">สารบัญทุกหน่วย</a></li></ul></div>`
     : `<div class="card"><h3>🎯 Today's Goals</h3><ul class="goals">${(u.goals || []).map(([sk, st, t, h], n) => `<li class="${goalsDone[n] ? "y" : ""}"><span class="ck">${goalsDone[n] ? "✓" : ""}</span><a href="${u.dir}#${h}">${t}</a></li>`).join("")}</ul></div>`;
   const right = role === "teacher"
     ? `<div class="card"><h3>📊 คะแนนเก็บ Unit 6</h3><ul class="legend">${SKILLS.map(([k, n, , , c]) => `<li><i style="background:${c}"></i>${n}<span>${u.points[k]}</span></li>`).join("")}<li><i style="background:var(--rose)"></i><b>รวม</b><span>10</span></li></ul><p class="muted" style="font-size:13px;margin:8px 0 0">+ ชิ้นงาน 10 · กลางภาค 20 · ปลายภาค 20 · จิตพิสัย 10 · มาเรียน 10</p></div>`
@@ -274,8 +274,8 @@ function viewLogin() {
 function viewContents() {
   $("#v-contents").innerHTML = `<div class="sec" style="margin-top:4px"><h2>🗂️ Learning Units · สารบัญ Get Involved! ม.3</h2></div>
     <div class="units">${UNITS.map(u => { const sc = role === "student" ? unitScore(u) : null;
-      const acts = !u.dir ? "" : !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>`
-        : role === "teacher" ? `<div class="acts"><a class="btn s p" href="${u.dir}#teacher">📽️ สไลด์สอน</a><a class="btn s" href="${u.dir}#teacher-results">📊 ผลนักเรียน</a><a class="btn s" href="${u.dir}#map">📖 ดูบทเรียน</a></div>`
+      const acts = !u.dir ? (role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a></div>` : "") : !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>`
+        : role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a><a class="btn s" href="${u.dir}#teacher-results">📊 ผลนักเรียน</a><a class="btn s" href="${u.dir}#map">📖 ดูบทเรียน</a></div>`
         : `<div class="acts"><a class="btn s p" href="${u.dir}#map">📖 เข้าบทเรียน</a><a class="btn s" href="${u.dir}#slides">📽️ สไลด์บทเรียน</a></div>`;
       return `<div class="u ${u.dir ? "" : "off"}" style="--c:${u.c}"><div class="cover" style="--bg:url(assets/bg/unit${u.n}.svg)"><span class="tag">${u.dir ? "เปิดเรียน" : "เร็ว ๆ นี้"}</span><span class="num"><small>UNIT</small>${u.n}</span><img src="assets/icons/unit${u.n}.png" alt="${esc(u.t)}"></div>
         <div class="body"><span class="no">บทที่ ${u.n} · Unit ${u.n} · เทอม ${u.term}</span><b>${u.t}</b><small>${esc(u.th)} · ${u.g}</small>
