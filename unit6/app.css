@@ -204,3 +204,10 @@ body.themed{background:var(--theme) center bottom/100% auto no-repeat fixed,line
 body.themed .hero{background-image:linear-gradient(90deg,rgba(255,255,255,.97) 30%,rgba(255,255,255,.35) 100%),var(--theme);background-size:cover;background-position:center 85%}
 body.themed .card,body.themed .st{background-color:rgba(255,255,255,.96)}
 @media (max-width:720px){body.themed{background-size:220% auto;background-attachment:scroll}body.themed .hero{background-image:linear-gradient(180deg,rgba(255,255,255,.95) 45%,rgba(255,255,255,.5)),var(--theme)}}
+
+/* inside the shared sidebar shell */
+.shx .top{position:sticky;top:10px;margin:12px 22px 0;border:1px solid #fbe3ea;border-radius:22px;background:rgba(255,255,255,.94);box-shadow:0 10px 28px rgba(200,50,90,.12)}
+.shx .top .in{max-width:none;padding:8px 14px}
+.shx #tocLink{display:none}
+.shx .wrap{max-width:1100px}
+@media (max-width:860px){.shx .top{margin:10px 10px 0;top:6px}}

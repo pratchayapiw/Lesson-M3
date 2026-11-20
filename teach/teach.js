@@ -3,6 +3,10 @@
 (function(){
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const U=window.TEACH_UNITS||{};
+const A=window.TEACH_ASSETS||'../assets/';
+const PAL={1:['#e2457a','#ffe3ee'],2:['#e8763a','#ffe6d2'],3:['#e7a21d','#fff1c9'],4:['#8b5cd6','#ece0ff'],5:['#4f9b3a','#e2f4d7'],6:['#3a7fd0','#dceeff'],7:['#d9467a','#ffe0ec'],8:['#3a8fd0','#dcefff']};
+for(const n in U){if(PAL[n]){U[n].color=PAL[n][0];U[n].light=PAL[n][1]}}
+const IMG=n=>A+'icons/unit'+n+'.png';
 const SEC={
   warm:['Warm-up','อุ่นเครื่อง','#e07a2e'], vocab:['Vocabulary','คำศัพท์','#d9493f'], read:['Reading','การอ่าน','#2f6fb3'],
   gram:['Grammar 1','ไวยากรณ์ 1','#2f8a4f'], listen:['Listening','การฟัง','#7b4bb5'], vocab2:['Vocabulary 2','คำศัพท์ 2','#c2410c'],
@@ -50,8 +54,8 @@ function showPicker(){
   document.title='Teaching Hub · Get Involved! M3';
   const g=$('#pkGrid');
   g.innerHTML=Object.keys(U).sort((a,b)=>a-b).map(n=>{const u=U[n];return `
-   <button class="pk-card" data-u="${n}" style="--uc:${u.color};--ubg:${u.bg}">
-     <div class="pk-art"><span class="pk-pill">Unit ${n}</span><span class="pk-term">เทอม ${u.term}</span>${u.art.map(e=>`<span class="em">${e}</span>`).join('')}</div>
+   <button class="pk-card" data-u="${n}" style="--uc:${u.color};--ubg:${u.light}">
+     <div class="pk-art"><span class="pk-term">เทอม ${u.term}</span><img src="${IMG(n)}" alt=""><span class="pk-pill">Unit ${n}</span></div>
      <div class="pk-body"><h3>${u.title}</h3><div class="th">${u.th}</div><div class="g">${u.gram}</div><div class="n">📽️ ${u.slides.length} สไลด์ · 🧰 เครื่องมือ ${3+['flash','sort','detect','puzzle','scramble','media'].filter(k=>u[k]).length} ชุด</div></div>
    </button>`}).join('');
   g.onclick=e=>{const b=e.target.closest('.pk-card');if(b)location.hash='u'+b.dataset.u};
@@ -63,7 +67,7 @@ function openUnit(n,s){
   pickpage.classList.add('hidden');app.classList.remove('hidden');
   document.title=`Unit ${n} ${unit.title} · Teaching Hub`;
   const r=document.documentElement.style;
-  r.setProperty('--u',unit.color);r.setProperty('--u2',unit.light);r.setProperty('--bar',unit.bar||'#1f2b44');
+  r.setProperty('--u',unit.color);r.setProperty('--u2',unit.light);
   $('#brandT').innerHTML=`${unit.art[0]} Unit ${n} · ${unit.title} <small>${unit.th}</small>`;
   // phases
   const secs=[];unit.slides.forEach((sl,i)=>{if(!secs.find(x=>x.k===sl.sec))secs.push({k:sl.sec,i})});
@@ -77,6 +81,7 @@ function openUnit(n,s){
 }
 
 /* ================= SLIDE RENDER ================= */
+const SAKURA=`<svg class="sak s1" viewBox="0 0 200 200" aria-hidden="true">${[[40,40,26],[95,22,18],[22,105,16],[120,70,12],[70,95,10]].map(([x,y,r])=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse rx="${r*.55}" ry="${r}" transform="rotate(${a}) translate(0 ${-r*.8})" fill="#f8b9cb"/>`).join('')}<circle r="${r*.3}" fill="#e2457a"/></g>`).join('')}</svg>`;
 function fxHTML(){
   const em=unit.fx||unit.art;let h='';
   for(let i=0;i<9;i++){h+=`<span style="left:${4+i*11}%;top:${20+((i*37)%70)}%;--d:${9+i%4*2}s;--dl:${i*1.3}s;--mx:${(i%2?1:-1)*(20+i*6)}px">${em[i%em.length]}</span>`}
@@ -91,7 +96,7 @@ const R={
  cover(sl){return `<div class="sl cover">
    <div class="ct"><span class="unitno an">UNIT ${unit.n}</span><h1 class="an" style="--i:1">${unit.title}</h1><div class="thn an" style="--i:2">${unit.th}</div>
    <div class="gl">${(sl.goals||[]).map((g,i)=>`<div class="an" style="--i:${3+i}"><b>${['🎯','🗣️','✍️','📖','🎧'][i%5]}</b>${md(g)}</div>`).join('')}</div></div>
-   <div class="art an" style="--i:2"><span class="big">${unit.art[0]}</span>${unit.art.slice(1,4).map((e,i)=>`<span class="orb" style="${['left:-10px;top:40px','right:-20px;top:120px','left:60px;bottom:-10px'][i]};animation-delay:${i*.6}s">${e}</span>`).join('')}</div></div>`},
+   <div class="art an" style="--i:2"><img class="big" src="${IMG(unit.n)}" alt="">${unit.art.slice(1,4).map((e,i)=>`<span class="orb" style="${['left:-10px;top:40px','right:-20px;top:120px','left:60px;bottom:-10px'][i]};animation-delay:${i*.6}s">${e}</span>`).join('')}</div></div>`},
  warm(sl){return `<div class="sl">${head(sl)}<div class="body">
    <div class="qbig an" style="--i:2">${md(sl.q)}</div>
    <div class="pics">${(sl.pics||[]).map(p=>`<div class="pic st"><div class="e">${p[0]}</div><div class="l">${md(p[1])}</div></div>`).join('')}</div>
@@ -138,7 +143,7 @@ const R={
 function render(){
   const sl=unit.slides[idx];
   const el=$('#slide');
-  el.innerHTML=`<div class="sbg"><div class="dots"></div><div class="blob b1"></div><div class="blob b2"></div><div class="wm">${sl.wm||unit.art[idx%unit.art.length]}</div></div>${fxHTML()}`+(R[sl.type]||R.gaps)(sl);
+  el.innerHTML=`<div class="sbg"><div class="dots"></div><div class="blob b1"></div><div class="blob b2"></div>${SAKURA}<img class="wm" src="${IMG(unit.n)}" alt=""></div>${fxHTML()}`+(R[sl.type]||R.gaps)(sl);
   steps=[...el.querySelectorAll('.st,.gp,.fc')].filter(x=>!(sl.type==='cards'&&sl.noflip&&x.classList.contains('fc')));
   si=0;updCounter();
   // phases + thumbs

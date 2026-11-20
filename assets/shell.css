@@ -1,0 +1,38 @@
+/* Shared pink-sakura sidebar shell (matches the M.3 English Learning Platform home page) */
+.shx{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+.shx-side{position:sticky;top:0;height:100vh;overflow:auto;background:linear-gradient(180deg,#d63e66 0%,#b8274f 100%);color:#fff;padding:20px 14px;border-radius:0 28px 28px 0;box-shadow:6px 0 24px rgba(160,30,70,.25);z-index:40}
+.shx-side .bloom{position:absolute;left:0;top:0;width:100%;height:130px;pointer-events:none;opacity:.6}
+.shx-brand{position:relative;text-align:center;padding:6px 6px 18px}
+.shx-crest{width:72px;height:72px;margin:0 auto 8px;border-radius:50%;background:#fff;color:#c8325a;display:grid;place-items:center;font:700 24px Kanit,sans-serif;border:4px solid #f7c9d6;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.shx-brand b{font:600 15px Kanit,sans-serif;display:block}
+.shx-brand small{font-size:12px;opacity:.9}
+.shx-nav{display:flex;flex-direction:column;gap:6px}
+.shx-nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:16px;text-decoration:none;color:#fff;font:500 17px Kanit,sans-serif}
+.shx-nav a:hover{background:rgba(255,255,255,.14)}
+.shx-nav a.on{background:#fff;color:#c8325a;box-shadow:0 6px 16px rgba(0,0,0,.15)}
+.shx-nav svg{width:22px;height:22px;flex:none}
+.shx-nav hr{border:0;border-top:1px solid rgba(255,255,255,.3);margin:8px 6px;width:auto}
+.shx-foot{margin-top:18px;font-size:13px;opacity:.85;padding:0 8px;line-height:1.5}
+.shx-main{min-width:0;position:relative;z-index:1}
+.shx-top{display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:14px 22px 0}
+.shx-top .sp{flex:1}
+.shx-hello{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:8px 10px 8px 14px;box-shadow:0 10px 28px rgba(200,50,90,.12);text-decoration:none;color:#3a2330}
+.shx-hello .bell{font-size:24px}
+.shx-hello b{font:600 16px Kanit,sans-serif;display:block;line-height:1.2}
+.shx-hello small{color:#6e5663;font-size:13px}
+.shx-av{width:42px;height:42px;border-radius:50%;background:#fde4ea;color:#c8325a;display:grid;place-items:center;font:700 15px Kanit,sans-serif}
+.shx-menu{display:none;border:0;background:#fff;border-radius:14px;padding:10px 14px;font:500 15px Kanit,sans-serif;color:#a3214a;box-shadow:0 10px 28px rgba(200,50,90,.12)}
+.shx-dim{display:none}
+.shx-petals{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.shx-petals i{position:absolute;top:-30px;width:14px;height:11px;background:#f8b9cb;border-radius:12px 0 12px 0;opacity:.7;animation:shxfall linear infinite}
+@keyframes shxfall{to{transform:translate(80px,110vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){.shx-petals{display:none}}
+@media (max-width:860px){
+  .shx{grid-template-columns:1fr}
+  .shx-side{position:fixed;left:0;top:0;bottom:0;width:260px;transform:translateX(-105%);transition:transform .25s}
+  .shx.open .shx-side{transform:none}
+  .shx.open .shx-dim{display:block;position:fixed;inset:0;background:rgba(60,20,35,.35);z-index:35}
+  .shx-menu{display:inline-flex}
+  .shx-top{justify-content:space-between;padding:10px 12px 0}
+  .shx-hello small{display:none}
+}

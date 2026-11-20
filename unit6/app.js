@@ -935,7 +935,13 @@ function slideViewer(el, teacher) {
   };
   go(cur);
 }
-function tSlides(el) { slideViewer(el, true); }
+function tSlides(el) {
+  el.innerHTML = `<div class="card" style="text-align:center;padding:26px 18px">
+    <div style="font-size:54px">📽️</div><h3 style="margin:6px 0">สไลด์สอน Unit 6 ย้ายไปที่ Teaching Hub แล้ว</h3>
+    <p class="muted">สไลด์สอนทุกหน่วยอยู่ที่เดียว มีบทสอนครู เฉลยทีละขั้น และเครื่องมือในห้องเรียน</p>
+    <a class="btn p" href="../teach/#u6">เปิด Teaching Hub · Unit 6 →</a>
+    <p class="muted" style="font-size:14px;margin-top:14px">สไลด์ทบทวนของนักเรียน (25 หน้า) ยังเปิดได้ที่ <a href="#slides">📽️ สไลด์บทเรียน</a></p></div>`;
+}
 function viewSlides() {
   const v = $("#v-station"); v.style.setProperty("--c", "var(--rose)");
   v.innerHTML = `<div class="sh"><img src="${ICON("u6")}" alt=""><div><span class="k">ทบทวนด้วยตนเอง</span><h2>สไลด์บทเรียน Unit 6</h2></div></div><div id="sb"></div>
