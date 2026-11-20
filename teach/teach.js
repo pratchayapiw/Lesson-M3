@@ -7,6 +7,32 @@ const A=window.TEACH_ASSETS||'../assets/';
 const PAL={1:['#e2457a','#ffe3ee'],2:['#e8763a','#ffe6d2'],3:['#e7a21d','#fff1c9'],4:['#8b5cd6','#ece0ff'],5:['#4f9b3a','#e2f4d7'],6:['#3a7fd0','#dceeff'],7:['#d9467a','#ffe0ec'],8:['#3a8fd0','#dcefff']};
 for(const n in U){if(PAL[n]){U[n].color=PAL[n][0];U[n].light=PAL[n][1]}}
 const IMG=n=>A+'icons/unit'+n+'.png';
+/* ---- Grammar: Question → Guided discovery stages ---- */
+const GSTEPS=[['q','❓','Question'],['notice','👀','Notice'],['compare','⚖️','Compare'],['meaning','💡','Meaning'],['detect','🚨','Detective'],['rule','🧩','Rule'],['practice','✍️','Practice']];
+function expandGD(u){
+  const G=(window.TEACH_GD||{})[u.n];
+  if(G){for(const k of ['gram','gram2']){if(!G[k])continue;const i=u.slides.findIndex(s=>s.sec===k);if(i<0)continue;
+    u.slides=u.slides.filter(s=>!(s.sec===k&&['rule','compare'].includes(s.type)));u.slides.splice(i,0,Object.assign({sec:k,type:'gd'},G[k]))}}
+  const out=[];let cur=null;
+  for(const s of u.slides){
+    if(s.type!=='gd'){ if(cur&&s.sec===cur&&['gaps','mcq','task'].includes(s.type)){s.gstep=s.gstep||'practice';s.kick=s.kick||'Practice · ฝึกใช้'} else if(s.sec!==cur) cur=null; out.push(s); continue }
+    cur=s.sec;const g=s,nm=g.name;
+    out.push({sec:g.sec,type:'gq',gstep:'q',min:3,title:'Question time!',sub:nm,kick:'Step 0 · Question · ถามนำ',q:g.q.q,frame:g.q.frame,ans:g.q.ans,
+      notes:{goal:'ถามคำถามจริงที่ต้องใช้โครงสร้าง <b>'+nm+'</b> ก่อนสอนกฎ ให้นักเรียนลองตอบตามความเข้าใจ',say:[g.q.q].concat(g.q.say||[]),do:['ถามคำถามบนจอ สุ่ม 3–4 คนตอบ (ยังไม่แก้ไวยากรณ์)','กด → แสดงคำตอบตัวอย่างทีละประโยค ให้สังเกตคำที่ไฮไลต์','จดคำตอบนักเรียน 1–2 ประโยคบนกระดาน ไว้ย้อนกลับมาตรวจใน Step 4'],ans:g.q.ans.join('<br>')},tools:['picker']});
+    out.push({sec:g.sec,type:'rule',gstep:'notice',min:4,title:'Look & notice',sub:nm,kick:'Step 1 · Look & Notice · สังเกต',ex:g.notice.ex,qs:g.notice.qs,
+      notes:{goal:'ให้นักเรียนสังเกตรูปแบบจากตัวอย่างด้วยตนเอง (ครูยังไม่บอกกฎ)',say:['Look at the sentences. What is the same? What is different?'].concat(g.notice.say||[]),do:['ให้อ่านตัวอย่างพร้อมกัน 1 รอบ','ให้คู่คุยตอบคำถาม 🔍 ทีละข้อ 1 นาที แล้วสุ่มตอบ','กด → เฉลยทีละข้อ ชมคนที่ค้นพบเอง'],ans:g.notice.qs.map(q=>(q.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['picker','timer']});
+    if(g.compare)out.push({sec:g.sec,type:'compare',gstep:'compare',min:4,title:g.compare.title||'Compare',sub:nm,kick:'Step 2 · Compare · เปรียบเทียบ',cols:g.compare.cols,qs:g.compare.qs,tip:g.compare.tip,
+      notes:{goal:'เปรียบเทียบรูปแบบ/ความหมายสองแบบ ให้เห็นความต่างเอง',say:['What is different between the two boxes?'].concat(g.compare.say||[]),do:['กด → ให้ตัวอย่างขึ้นทีละกล่อง','ถามคำถาม 🔍 ให้คู่หาความต่าง แล้วจึงเฉลย'],ans:(g.compare.qs||[]).map(q=>(q.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['picker','sort']});
+    out.push({sec:g.sec,type:'ccq',gstep:'meaning',min:3,title:'Check the meaning',sub:nm,kick:'Step 3 · Meaning · เช็กความหมาย',ex:g.meaning.ex,items:g.meaning.ccq,
+      notes:{goal:'ใช้คำถามเช็กความเข้าใจ (CCQ) ให้แน่ใจว่าเข้าใจความหมาย ไม่ใช่แค่จำรูป',say:['Read the sentence. Answer my questions: YES or NO?'],do:['ให้ทั้งห้องชู 👍 (YES) หรือ 👎 (NO) ทุกข้อ','กด → เฉลยทีละข้อ ถ้าตอบผิดเยอะให้กลับไปดู Step 1'],ans:g.meaning.ccq.map(c=>c[0].replace(/<[^>]+>/g,'')+' → '+c[1]).join('<br>')},tools:['picker']});
+    out.push({sec:g.sec,type:'gdet',gstep:'detect',min:4,title:'Grammar Detective',sub:nm,kick:'Step 4 · Detective · จับผิด',items:g.detect,
+      notes:{goal:'วิเคราะห์ข้อผิดพลาดที่พบบ่อย ให้นักเรียนอธิบายเหตุผลเอง',say:['What is wrong? Why? Can you fix it?'],do:['ให้กลุ่มหาจุดผิด 1 นาที (กดจับเวลา)','กด → ขีดฆ่าจุดผิด แล้วกดอีกครั้งเพื่อแสดงประโยคที่ถูกและเหตุผล','ย้อนตรวจประโยคนักเรียนที่จดไว้ตอน Step 0','ให้คะแนนกลุ่มที่แก้ถูก'],ans:g.detect.map(d=>d[1].replace(/\*\*/g,'')).join('<br>')},tools:['timer','score','detect']});
+    out.push({sec:g.sec,type:'rule',gstep:'rule',min:4,title:'Build the rule',sub:nm,kick:'Step 5 · Rule · สรุปกฎ',formula:g.rule.formula,table:g.rule.table,qs:g.rule.qs,tip:g.rule.tip,ex:g.rule.ex,
+      notes:{goal:'ให้นักเรียนสรุปกฎจากสิ่งที่ค้นพบ แล้วครูยืนยัน',say:['So, what is the rule? Tell me!'].concat(g.rule.say||[]),do:['ให้ตัวแทนกลุ่มบอกกฎก่อน แล้วกด → เปิดสูตร/ตารางทีละส่วน','ใช้ 🧩 สร้างสูตร ให้ออกมาวางบนจอ','ให้จดสรุปลงสมุด'],ans:(g.rule.qs||[]).map(q=>(q.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['puzzle']});
+  }
+  u.slides=out;
+}
+for(const n in U)expandGD(U[n]);
 const SEC={
   warm:['Warm-up','อุ่นเครื่อง','#e07a2e'], vocab:['Vocabulary','คำศัพท์','#d9493f'], read:['Reading','การอ่าน','#2f6fb3'],
   gram:['Grammar 1','ไวยากรณ์ 1','#2f8a4f'], listen:['Listening','การฟัง','#7b4bb5'], vocab2:['Vocabulary 2','คำศัพท์ 2','#c2410c'],
@@ -89,7 +115,8 @@ function fxHTML(){
 }
 function head(sl,kick){
   const d=SEC[sl.sec];
-  return `<div class="kick an" style="--sec:${d[2]}"><span class="chip">${d[0]}</span>${kick||d[1]}</div>
+  const gs=sl.gstep?`<div class="gsteps an">${GSTEPS.filter(x=>x[0]!=='compare'||unit.slides.some(s=>s.sec===sl.sec&&s.gstep==='compare')).map(x=>`<span class="${x[0]===sl.gstep?'on':''}">${x[1]} ${x[2]}</span>`).join('')}</div>`:'';
+  return `${gs}<div class="kick an" style="--sec:${d[2]}"><span class="chip">${d[0]}</span>${sl.kick||kick||d[1]}</div>
     <div class="stitle an" style="--i:1">${md(sl.title)}</div>${sl.sub?`<div class="ssub an" style="--i:2">${md(sl.sub)}</div>`:''}`;
 }
 const R={
@@ -121,7 +148,17 @@ const R={
    </div></div></div>`},
  compare(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="cmp" style="--n:${sl.cols.length}">
    ${sl.cols.map((c,ci)=>`<div class="col an" style="--i:${2+ci};--cc:${c.c||'var(--u)'}"><h3>${c.h}${c.s?`<small>${c.s}</small>`:''}</h3>${c.items.map(it=>`<div class="it st">${md(it)}</div>`).join('')}</div>`).join('')}
-   </div>${sl.tip?`<div class="tip st">💡 ${md(sl.tip)}</div>`:''}</div></div>`},
+   </div>${(sl.qs||[]).length?`<div class="cqs">${sl.qs.map(q=>`<div class="q st"><b>🔍</b> ${md(q)}</div>`).join('')}</div>`:''}${sl.tip?`<div class="tip st">💡 ${md(sl.tip)}</div>`:''}</div></div>`},
+ gq(sl){return `<div class="sl">${head(sl)}<div class="body">
+   <div class="qbig an" style="--i:2">❓ ${md(sl.q)}</div>
+   ${sl.frame?`<div class="tframe an" style="--i:3">🗣️ ${md(sl.frame)}</div>`:''}
+   <div class="gqa">${sl.ans.map((a,i)=>`<div class="gqb st ${i%2?'r':''}"><span class="av">${['🧑','👧','👦','👩'][i%4]}</span><span class="bb">${md(a)}</span></div>`).join('')}</div></div></div>`},
+ ccq(sl){return `<div class="sl">${head(sl)}<div class="body">
+   <div class="ccx an" style="--i:2">${(sl.ex||[]).map(e=>`<div>“${md(e)}”</div>`).join('')}</div>
+   <div class="ccl">${sl.items.map((c,i)=>`<div class="cc an" style="--i:${3+i}"><span class="n">${i+1}</span><span class="t">${md(c[0])}</span><span class="yn st ${/^yes/i.test(c[1])?'y':/^no/i.test(c[1])?'n':''}">${/^yes/i.test(c[1])?'👍 ':/^no/i.test(c[1])?'👎 ':''}${md(c[1])}</span></div>`).join('')}</div></div></div>`},
+ gdet(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="gdl">
+   ${sl.items.map((d,i)=>`<div class="gd an" style="--i:${2+i}"><span class="n">${i+1}</span><div class="w"><div class="bad">❌ ${d[0].replace(/<m>(.*?)<\/m>/g,'<mark class="mk">$1</mark>')}</div><div class="fix st">✅ ${md(d[1])} <small>${d[2]}</small></div></div></div>`).join('')}
+   </div></div></div>`},
  read(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="rd">
    <div class="rtext an" style="--i:2"><div class="rh">${sl.h||''} <button class="spk" data-say="${esc(plain(sl.text.join(' ')))}">🔊</button></div>${sl.text.map(p=>`<p>${md(p)}</p>`).join('')}</div>
    <div class="rqs">${sl.qs.map((q,i)=>`<div class="rq st"><b>${i+1}.</b> ${md(q[0])}<span class="a">→ ${md(q[1])}</span></div>`).join('')}</div>
@@ -144,7 +181,7 @@ function render(){
   const sl=unit.slides[idx];
   const el=$('#slide');
   el.innerHTML=`<div class="sbg"><div class="dots"></div><div class="blob b1"></div><div class="blob b2"></div>${SAKURA}<img class="wm" src="${IMG(unit.n)}" alt=""></div>${fxHTML()}`+(R[sl.type]||R.gaps)(sl);
-  steps=[...el.querySelectorAll('.st,.gp,.fc')].filter(x=>!(sl.type==='cards'&&sl.noflip&&x.classList.contains('fc')));
+  steps=[...el.querySelectorAll('.st,.gp,.fc,.mk')].filter(x=>!(sl.type==='cards'&&sl.noflip&&x.classList.contains('fc')));
   si=0;updCounter();
   // phases + thumbs
   $$('.ph').forEach(b=>b.classList.toggle('on',b.dataset.k===sl.sec));
@@ -196,11 +233,11 @@ function renderQuick(sl){
 /* fit 1600x900 into stage */
 function fit(){
   const st=$('#stage');if(!st||app.classList.contains('hidden'))return;
-  const W=st.clientWidth-24,H=st.clientHeight-24;const k=Math.min(W/1600,H/900);
+  const pd=2*(parseFloat(getComputedStyle(st).paddingLeft)||12);const W=st.clientWidth-pd,H=st.clientHeight-pd;const k=Math.min(W/1600,H/900);
   const fr=$('#frame');fr.style.width=1600*k+'px';fr.style.height=900*k+'px';
   $('#slide').style.transform=`scale(${k})`;
 }
-addEventListener('resize',fit);
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));
 
 /* ================= EVENTS ================= */
 document.addEventListener('click',e=>{
@@ -221,6 +258,13 @@ document.addEventListener('click',e=>{
   if(t.closest('#slide')){next();return}
 });
 $('#prev').onclick=()=>go(idx-1);
+/* touch: swipe left/right on the slide */
+let tx=null,ty=null;
+$('#stage').addEventListener('touchstart',e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY},{passive:true});
+$('#stage').addEventListener('touchend',e=>{if(tx==null)return;const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;tx=null;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){e.preventDefault();dx<0?go(idx+1):go(idx-1)}},{passive:false});
+/* small screens start without the notes panel in landscape */
+if(matchMedia('(orientation:landscape) and (max-height:520px)').matches){notesOn=false;$('#main').classList.add('nonotes');$('#notesBtn').classList.remove('on')}
 $('#next').onclick=()=>next();
 $('#homeBtn').onclick=()=>{location.hash=''};
 $('#notesBtn').onclick=()=>{notesOn=!notesOn;$('#main').classList.toggle('nonotes',!notesOn);$('#notesBtn').classList.toggle('on',notesOn);setTimeout(fit,30)};

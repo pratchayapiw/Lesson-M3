@@ -439,3 +439,85 @@ body:has(#app:not(.hidden)) .shx-petals{display:none}
 .cover .unitno{box-shadow:0 6px 14px rgba(0,0,0,.15)}
 .cover{padding-left:110px}
 .card,.gitem,.mq,.opt,.ex,.col,.rtext,.tk,.ex3,.qbig,.pic,.wmodel,.ln .bb{border:1px solid #fbe3ea}
+
+/* ===== guided discovery stages ===== */
+.gsteps{position:absolute;right:60px;top:18px;display:flex;gap:6px;z-index:2}
+.gsteps span{font:500 17px Kanit,sans-serif;padding:2px 11px;border-radius:20px;background:#fff;color:#b7a2ad;border:2px solid #f3d3dc;white-space:nowrap}
+.gsteps span.on{background:var(--u);color:#fff;border-color:var(--u);box-shadow:0 6px 14px rgba(0,0,0,.15);transform:scale(1.08)}
+.sl:has(.gsteps){padding-top:62px}
+.cqs{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.cqs .q{flex:1;min-width:420px}
+.gqa{display:flex;flex-direction:column;gap:16px;margin-top:26px}
+.gqb{display:flex;gap:16px;align-items:center;max-width:80%}
+.gqb.r{align-self:flex-end;flex-direction:row-reverse}
+.gqb .av{width:76px;height:76px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:48px;box-shadow:0 4px 12px #0002;flex:0 0 76px}
+.gqb .bb{background:#fff;border-radius:26px;padding:14px 26px;font:800 38px Nunito,sans-serif;box-shadow:0 6px 18px #0000000f;border:1px solid #fbe3ea}
+.gqb.r .bb{background:var(--u2)}
+.ccx{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.ccx div{background:#fff;border-radius:20px;padding:14px 28px;font:800 40px Nunito,sans-serif;border-left:12px solid var(--u);box-shadow:0 6px 18px #0000000f}
+.ccl{display:flex;flex-direction:column;gap:14px}
+.cc{display:flex;align-items:center;gap:18px;background:var(--u2);border-radius:20px;padding:12px 22px;font-size:34px}
+.cc .n{width:50px;height:50px;border-radius:50%;background:var(--u);color:#fff;display:grid;place-items:center;font:600 26px Kanit,sans-serif;flex:0 0 50px}
+.cc .t{flex:1}
+.cc .yn{font:700 32px Kanit,sans-serif;padding:4px 20px;border-radius:30px;background:#fff;white-space:nowrap}
+.cc .yn.y{color:var(--ok)}.cc .yn.n{color:#c0392b}
+.gdl{display:flex;flex-direction:column;gap:16px;justify-content:center;flex:1}
+.gd{display:flex;gap:18px;background:#fff;border-radius:22px;padding:14px 24px;box-shadow:0 6px 18px #0000000f;border:1px solid #fbe3ea}
+.gd .n{width:50px;height:50px;border-radius:50%;background:#c0392b;color:#fff;display:grid;place-items:center;font:600 26px Kanit,sans-serif;flex:0 0 50px}
+.gd .w{flex:1}
+.gd .bad{font:800 36px Nunito,sans-serif}
+.gd mark.mk{background:none;color:inherit;transition:.4s;border-radius:6px;padding:0 4px}
+.gd mark.mk.on{background:#ffd6d6;color:#b02a2a;text-decoration:line-through 4px}
+.gd .fix{font:800 34px Nunito,sans-serif;color:var(--ok);margin-top:4px}
+.gd .fix small{display:block;font:400 26px Sarabun,sans-serif;color:var(--muted)}
+.gdl:has(.gd:nth-child(4)) .gd{padding:8px 20px}.gdl:has(.gd:nth-child(4)) .gd .bad{font-size:31px}.gdl:has(.gd:nth-child(4)) .gd .fix{font-size:29px}.gdl:has(.gd:nth-child(4)) .gd .fix small{font-size:23px;display:inline;margin-left:8px}
+
+/* ===== every device ===== */
+.counter{left:14px;transform:none}
+.main{grid-template-columns:minmax(0,1fr) 370px}
+.main.nonotes{grid-template-columns:minmax(0,1fr) 0}
+.top>*{min-width:0}
+@media (max-width:1100px) and (min-width:901px){.main{grid-template-columns:minmax(0,1fr) 300px}.notes{padding:12px}}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr);overflow-x:hidden}
+  .main,.main.nonotes{grid-template-columns:minmax(0,1fr)}
+  .main{grid-template-rows:auto auto}
+  .stage{height:calc(56.25vw + 24px);padding:8px}
+  .top{gap:6px;padding:6px 8px}
+  .brand{flex:1 1 100%;font-size:15px;overflow:hidden}
+  .brand span{overflow:hidden;text-overflow:ellipsis}
+  .clock .t{font-size:16px;min-width:48px}
+  .clock .ibtn{padding:4px 7px;font-size:12px}
+  .ibtn{padding:6px 9px}
+  .nav{width:38px;height:38px;font-size:20px}
+  .nav.l{left:4px}.nav.r{right:4px}
+  .counter{font-size:11px;bottom:4px;left:6px;padding:2px 8px}
+  .quick{bottom:4px;right:6px;gap:4px;max-width:65%}
+  .quick button:not(.rv){display:none}
+  .quick button{font-size:12px;padding:4px 10px}
+  .notes{max-height:none}
+  .thumbs{position:sticky;bottom:0}
+  .panel{width:100vw;height:100vh;border-radius:0}
+  .tbody{padding:12px}
+  .prow{font-size:18px;padding:10px}.prow .lab{width:100%}
+  .slot{min-width:110px;height:48px;font-size:16px}
+  .piece{font-size:17px;padding:9px 14px}
+  .sbtns button{min-width:0;flex:1;font-size:18px;padding:12px}
+  .scard{font-size:22px;padding:18px 12px;min-height:110px}
+  .dcase .w{font-size:19px}.dcase .fix .c{font-size:18px}
+  .flash{min-height:250px}.flash .e{font-size:80px}.flash .w{font-size:34px}.flash .t{font-size:26px}
+  .wtile{font-size:18px;padding:8px 12px}
+  .team .s{font-size:44px}
+}
+/* phones held sideways: show just the slide; บทสอน button brings notes back */
+@media (orientation:landscape) and (max-height:520px){
+  body{overflow:hidden}
+  .app{height:100vh;grid-template-rows:auto 1fr}
+  .phases,.thumbs,.clock{display:none}
+  .top{flex-wrap:nowrap;padding:4px 8px}
+  .brand{flex:1 1 auto}
+  .main,.main.nonotes{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+  .main:not(.nonotes){grid-template-columns:minmax(0,1fr) 300px}
+  .main:not(.nonotes) .notes{display:block}
+  .stage{height:auto}
+}
