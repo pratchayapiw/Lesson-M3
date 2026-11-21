@@ -85,12 +85,18 @@ window.TSAY=say;
 
 /* ---- state ---- */
 let unit=null, idx=0, steps=[], si=0, notesOn=true;
+/* who is using it: teacher (code 2536 on the home page), student (signed in), or the Claude preview copy */
+let ROLE='t';try{if(!window.TEACH_ASSETS&&sessionStorage.getItem('m3:t')!=='1')ROLE=localStorage.getItem('m3:me')?'s':'none'}catch(e){}
+if(ROLE==='none')location.replace('../index.html#login');
+const STU=ROLE==='s';if(STU){notesOn=false;document.documentElement.classList.add('stu')}
 const app=$('#app'), pickpage=$('#pickpage');
 
 /* ================= UNIT PICKER ================= */
 function showPicker(){
   app.classList.add('hidden');pickpage.classList.remove('hidden');
-  document.title='Teaching Hub · Get Involved! M3';
+  document.title=STU?'บทเรียน ม.3 · Get Involved! M3':'Teaching Hub · Get Involved! M3';
+  if(STU){const b=$('.pk-banner h1');if(b)b.innerHTML='บทเรียน ม.3 <span>Get Involved! M3</span>';const tg=$('.pk-banner .tagline');if(tg)tg.innerHTML='<b>เลือกหน่วยการเรียนรู้</b><small>เรียนจากสไลด์ ฟังเสียง ทำแบบฝึกท้ายเล่ม และสอบย่อยท้ายหน่วย</small>';
+    const s=$('#stuNote');if(s)s.classList.remove('hidden')}
   const g=$('#pkGrid');
   g.innerHTML=Object.keys(U).sort((a,b)=>a-b).map(n=>{const u=U[n];return `
    <button class="pk-card" data-u="${n}" style="--uc:${u.color};--ubg:${u.light}">
@@ -116,6 +122,7 @@ function openUnit(n,s){
   $('#thumbs').innerHTML=unit.slides.map((sl,i)=>`<button class="tb" data-i="${i}"><b>${i+1}</b><span>${esc(plain(sl.title))}</span><i style="background:${SEC[sl.sec][2]}"></i></button>`).join('');
   $('#thumbs').onclick=e=>{const b=e.target.closest('.tb');if(b)go(+b.dataset.i)};
   buildTools();
+  $('#main').classList.toggle('nonotes',!notesOn);$('#notesBtn').classList.toggle('on',notesOn);
   go(Math.min(s||0,unit.slides.length-1),true);
 }
 
@@ -339,7 +346,7 @@ function drawLt(){const t=$('#lt');t.textContent=String(Math.floor(lt/60)).padSt
 
 /* ================= TOOLS ================= */
 let curTool=null;
-function availTools(){return Object.keys(TOOLS).filter(k=>['timer','picker','score'].includes(k)||(k==='quiz'?(unit.quiz||[]).length:unit[k]))}
+function availTools(){return Object.keys(TOOLS).filter(k=>(!STU||['quiz','flash','sort','puzzle','scramble','timer'].includes(k))&&(['timer','picker','score'].includes(k)||(k==='quiz'?(unit.quiz||[]).length:unit[k])))}
 function buildTools(){
   const av=availTools();unit.toolsCount=av.length;
   $('#tabs').innerHTML=av.map(k=>`<button class="tab" data-tab="${k}">${TOOLS[k]}</button>`).join('');

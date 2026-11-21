@@ -180,8 +180,8 @@ const ICONS = { home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 
 const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
 function nav(v) {
   const items = role === "teacher"
-    ? [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "สไลด์สอน"], [OPEN.dir + "#teacher-results", "prog", "ผลนักเรียน"], [OPEN.dir + "#map", "test", "ดูบทเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
-    : [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], [OPEN.dir + "#slides", "slides", "Lesson Slides"], [OPEN.dir + "#map", "test", "Practice & Tests"], [OPEN.dir + "#summary", "prog", "My Progress"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]];
+    ? [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "บทเรียน / สไลด์สอน"], [OPEN.dir + "#teacher-results", "prog", "ผลนักเรียน"], [OPEN.dir + "#map", "test", "ดูบทเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
+    : [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "บทเรียนทุกหน่วย"], [OPEN.dir + "#map", "test", "Practice & Tests"], [OPEN.dir + "#summary", "prog", "My Progress"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]];
   $("#nav").innerHTML = items.map(x => x[0] === "hr" ? "<hr>" : `<a href="${x[0]}" class="${x[0] === "#" + v ? "on" : ""}">${svg(x[1])}${x[2]}</a>`).join("");
   const name = role === "teacher" ? "Kru Pratchaya" : me ? me.name : "เลือกผู้ใช้งาน";
   $("#hello").innerHTML = `<span class="bell">🔔</span><span><small>Welcome!</small><b>${esc(name)}</b></span><span class="avatar">${role === "teacher" ? "KP" : me ? esc(me.name.trim().slice(0, 2)) : "?"}</span>`;
@@ -224,9 +224,9 @@ function viewHome() {
   $("#v-home").innerHTML = `<div class="banner">${scene()}<div class="txt"><h1>M.3 English <span>Learning Platform</span></h1>
       <div class="tagline"><b>English for Real Life</b><small>Learn · Practice · Play · Communicate</small></div></div></div>
     <div class="sec"><h2>📚 Learning Units</h2><a href="#contents">ดูสารบัญทั้งเล่ม →</a></div>
-    <div class="tiles">${UNITS.map(x => { const tch = role === "teacher", ok = tch || x.dir;
-        const href = tch ? "teach/#u" + x.n : (me ? x.dir + "#map" : "#login");
-        const tag = tch ? '<span class="open">สไลด์สอน</span>' : x.dir ? '<span class="open">เปิดเรียน</span>' : '<span class="soon">เร็ว ๆ นี้</span>';
+    <div class="tiles">${UNITS.map(x => { const tch = role === "teacher", ok = true;
+        const href = role ? "teach/#u" + x.n : "#login";
+        const tag = tch ? '<span class="open">สไลด์สอน</span>' : '<span class="open">เปิดเรียน</span>';
         const inner = `${tag}<img src="assets/icons/unit${x.n}.png" alt=""><span class="pn">Unit ${x.n}</span><b>${x.t}</b>`;
         return ok ? `<a class="tile" href="${href}" style="--bg:${x.bg};--pc:${x.pc}">${inner}</a>` : `<div class="tile off" aria-disabled="true" title="บทเรียนนี้กำลังจัดทำ" style="--bg:${x.bg};--pc:${x.pc}">${inner}</div>`; }).join("")}</div>
     <div class="dash">${left}${mid}${right}</div>
@@ -249,14 +249,14 @@ function viewLogin() {
   const form = () => {
     const rf = $("#rf");
     if (pickRole === "teacher") {
-      if (role === "teacher") { rf.innerHTML = `<h3>เข้าสู่โหมดครูแล้ว</h3><div class="row" style="margin-top:10px"><a class="btn p" href="#home">ไปหน้า Home →</a><button class="btn" id="out">ออกจากโหมดครู</button></div>`;
+      if (role === "teacher") { rf.innerHTML = `<h3>เข้าสู่โหมดครูแล้ว</h3><div class="row" style="margin-top:10px"><a class="btn p" href="teach/">ไปหน้าบทเรียน →</a><button class="btn" id="out">ออกจากโหมดครู</button></div>`;
         $("#out").onclick = () => { SS.del("m3:t"); SS.del("m3:tp"); role = me ? "student" : null; pickRole = role; route(); }; return; }
       rf.innerHTML = `<h3>รหัสครู</h3><form id="tf" class="row" style="margin-top:10px;max-width:460px"><input class="inp" id="tc" type="password" inputmode="numeric" autocomplete="off" placeholder="ใส่รหัสครู" style="flex:1"><button class="btn p">เข้าโหมดครู</button></form><div id="te"></div>`;
       $("#tc").focus();
       $("#tf").onsubmit = async e => { e.preventDefault(); let ok = false; const c = $("#tc").value.trim();
         try { ok = (await sha("m3-teacher:" + c)) === TEACHER_HASH; } catch (er) {}
         if (!ok) { $("#te").innerHTML = `<div class="fb bad">รหัสไม่ถูกต้อง</div>`; return; }
-        SS.set("m3:t", "1"); SS.set("m3:tp", c); role = "teacher"; location.hash = "#home"; };
+        SS.set("m3:t", "1"); SS.set("m3:tp", c); role = "teacher"; location.href = "teach/"; };
       return;
     }
     if (pickRole !== "student") { rf.innerHTML = `<p class="muted">เลือก “นักเรียน” หรือ “ครู” ด้านบน</p>`; return; }
@@ -264,10 +264,10 @@ function viewLogin() {
       <input class="inp" name="name" placeholder="ชื่อ–นามสกุล" maxlength="80" required value="${me ? esc(me.name) : ""}">
       <div class="row"><input class="inp" name="cls" placeholder="ห้อง เช่น ม.3/1" maxlength="20" required style="flex:1" value="${me ? esc(me.cls) : ""}">
       <input class="inp" name="no" placeholder="เลขที่" maxlength="10" required inputmode="numeric" style="width:120px" value="${me ? esc(me.no) : ""}"></div>
-      <div class="row"><button class="btn p" type="submit">${me ? "บันทึกและไปหน้า Home →" : "เข้าใช้ระบบ →"}</button>${me ? `<button class="btn" type="button" id="out">ออกจากระบบ</button>` : ""}</div></form>`;
+      <div class="row"><button class="btn p" type="submit">${me ? "บันทึกและไปหน้าบทเรียน →" : "เข้าใช้ระบบ →"}</button>${me ? `<button class="btn" type="button" id="out">ออกจากระบบ</button>` : ""}</div></form>`;
     $("#f").onsubmit = e => { e.preventDefault(); const f = new FormData(e.target);
       me = { name: f.get("name").trim(), cls: f.get("cls").trim(), no: f.get("no").trim() }; if (!me.name || !me.cls || !me.no) return;
-      LS.set("m3:me", me); SS.del("m3:t"); SS.del("m3:tp"); role = "student"; location.hash = "#home"; };
+      LS.set("m3:me", me); SS.del("m3:t"); SS.del("m3:tp"); role = "student"; location.href = "teach/"; };
     const out = $("#out"); if (out) out.onclick = () => { LS.del("m3:me"); me = null; role = null; route(); };
   };
   $(".pick").onclick = e => { const b = e.target.closest("[data-r]"); if (!b) return; pickRole = b.dataset.r;
@@ -277,10 +277,10 @@ function viewLogin() {
 function viewContents() {
   $("#v-contents").innerHTML = `<div class="sec" style="margin-top:4px"><h2>🗂️ Learning Units · สารบัญ Get Involved! ม.3</h2></div>
     <div class="units">${UNITS.map(u => { const sc = role === "student" ? unitScore(u) : null;
-      const acts = !u.dir ? (role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a></div>` : "") : !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>`
+      const acts = !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>` : !u.dir ? (role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a></div>` : `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📖 เข้าเรียน</a></div>`) : !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>`
         : role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a><a class="btn s" href="${u.dir}#teacher-results">📊 ผลนักเรียน</a><a class="btn s" href="${u.dir}#map">📖 ดูบทเรียน</a></div>`
-        : `<div class="acts"><a class="btn s p" href="${u.dir}#map">📖 เข้าบทเรียน</a><a class="btn s" href="${u.dir}#slides">📽️ สไลด์บทเรียน</a></div>`;
-      return `<div class="u ${u.dir || role === "teacher" ? "" : "off"}" style="--c:${u.c}"><div class="cover" style="--bg:url(assets/bg/unit${u.n}.svg)"><span class="tag">${u.dir ? "เปิดเรียน" : role === "teacher" ? "สไลด์สอนพร้อม" : "เร็ว ๆ นี้ · กำลังจัดทำ"}</span><span class="num"><small>UNIT</small>${u.n}</span><img src="assets/icons/unit${u.n}.png" alt="${esc(u.t)}"></div>
+        : `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📖 เข้าเรียน</a><a class="btn s" href="${u.dir}#map">📝 แบบฝึกเก็บคะแนน</a></div>`;
+      return `<div class="u ${u.dir || role ? "" : "off"}" style="--c:${u.c}"><div class="cover" style="--bg:url(assets/bg/unit${u.n}.svg)"><span class="tag">${role === "teacher" ? "สไลด์สอนพร้อม" : "เปิดเรียน"}</span><span class="num"><small>UNIT</small>${u.n}</span><img src="assets/icons/unit${u.n}.png" alt="${esc(u.t)}"></div>
         <div class="body"><span class="no">บทที่ ${u.n} · Unit ${u.n} · เทอม ${u.term}</span><b>${u.t}</b><small>${esc(u.th)} · ${u.g}</small>
         ${sc ? `<small><b style="font-size:17px;color:var(--c)">${sc.total.toFixed(2)} / 10</b> · ข้อสอบย่อย ${sc.done}/6</small>` : ""}${acts}</div></div>`; }).join("")}</div>
     <p class="muted" style="margin-top:18px;font-size:15px">เลขบทตรงกับหนังสือ · เทอม 2 เรียน Unit 6–8 · Grammar bootcamp p116 · Pronunciation p128</p>`;

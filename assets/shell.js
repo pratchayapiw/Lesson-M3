@@ -14,8 +14,8 @@
   const items=EMBED
     ?[['teach','#','slides','สไลด์สอน 8 หน่วย'],['hr'],['site',R,'home','เปิดเว็บไซต์เต็ม ↗']]
     :teacher
-    ?[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','สไลด์สอน'],['results',R+'unit6/#teacher-results','prog','ผลนักเรียน'],['map',R+'unit6/#map','test','ดูบทเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
-    :[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['slides',R+'unit6/#slides','slides','Lesson Slides'],['map',R+'unit6/#map','test','Practice & Tests'],['summary',R+'unit6/#summary','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
+    ?[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','บทเรียน / สไลด์สอน'],['results',R+'unit6/#teacher-results','prog','ผลนักเรียน'],['map',R+'unit6/#map','test','ดูบทเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
+    :[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','บทเรียนทุกหน่วย'],['map',R+'unit6/#map','test','Practice & Tests'],['summary',R+'unit6/#summary','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
   if(EMBED)teacher=true;
   const name=teacher?'Kru Pratchaya':me?me.name:'เลือกผู้ใช้งาน';
   const av=teacher?'KP':me?String(me.name).trim().slice(0,2):'?';
