@@ -57,6 +57,8 @@
   <div class="panel">
     <div class="ph2"><div class="tabs" id="tabs"></div><button class="x" id="closeOv">✕ กลับสไลด์</button></div>
     <div class="tbody">
+      <section class="tool" id="t-stest"><div id="twBody"></div></section>
+      <section class="tool" id="t-results"><h2 class="tt">📊 ผลแบบฝึก + สอบย่อยของนักเรียน</h2><p class="sub">นับคะแนนครั้งแรกของแต่ละคน (ทำซ้ำได้เพื่อฝึก) · เกณฑ์ผ่าน 70%</p><div id="rsBody"></div></section>
       <section class="tool" id="t-quiz">
         <h2 class="tt">📝 Unit Quiz · สอบย่อยท้ายหน่วย</h2><p class="sub">แสดงทีละข้อ ให้นักเรียนเขียนคำตอบ A–D → แตะตัวเลือกที่ห้องตอบมากที่สุด หรือกด 🔑 เฉลย · <button class="btn alt" id="qzPrint" style="padding:4px 10px;font-size:14px">🖨️ พิมพ์ข้อสอบ + เฉลย</button></p>
         <div id="qzBody"></div>
@@ -123,6 +125,7 @@
 <script src="units/u8.js"></script>
 <script src="units/gd.js"></script>
 <script src="units/wb.js"></script>
+<script src="../config.js"></script>
 <script src="teach.js"></script>
 <script src="../assets/shell.js" data-root="../" data-wrap="#pickpage" data-active="teach"></script>
 </body>

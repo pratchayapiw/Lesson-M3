@@ -557,3 +557,34 @@ html.stu #notesBtn,html.stu .clock{display:none}
 .pk-stu{display:block;margin-top:14px;background:#fff;border:2px dashed #f3a9bf;border-radius:18px;padding:12px 18px;color:var(--rose-d);text-decoration:none;font:500 17px Kanit,sans-serif}
 .pk-stu.hidden{display:none}
 @media (max-width:900px){.app{grid-template-rows:auto auto auto;align-content:start}.main.nonotes{grid-template-rows:auto}}
+
+/* phones: panels fit the visible screen */
+.ov.show{align-items:stretch}
+.panel{height:min(780px,94vh);height:min(780px,94dvh);max-height:100dvh}
+@media (max-width:900px){.panel{height:100vh;height:100dvh}.tbody{-webkit-overflow-scrolling:touch;padding-bottom:40px}
+  .qzq{font-size:20px;padding:12px 14px;margin:8px 0 10px}.qzo{gap:8px}.qzo button{padding:10px 12px;font-size:17px;border-radius:14px}.qzo button i{width:32px;height:32px;flex-basis:32px}}
+/* student self-test */
+.tw-top{display:flex;justify-content:space-between;align-items:center;font:500 18px Kanit,sans-serif;color:var(--rose-d);position:sticky;top:-18px;background:var(--paper);padding:8px 0;z-index:2}
+.tw-bar{height:10px;background:var(--rose-l);border-radius:8px;overflow:hidden;margin-bottom:6px}.tw-bar i{display:block;height:100%;background:var(--rose);transition:width .3s}
+.tw-ex{background:#fff;border:1px solid #fbe3ea;border-radius:16px;padding:12px 16px;margin:10px 0}
+.tw-ex h4{margin:0 0 6px;font:600 18px Kanit,sans-serif;color:var(--rose-d)}
+.tw-ex ol{margin:0;padding-left:22px;line-height:2.1;font:700 19px Nunito,sans-serif}
+.tw-in{font:700 18px Nunito,sans-serif;border:0;border-bottom:3px solid var(--rose);background:#fff6f8;border-radius:6px 6px 0 0;padding:2px 6px;max-width:100%;min-width:70px}
+.tw-in:focus{outline:2px solid #f3a9bf}
+.tw-ch{display:inline-flex;gap:6px;flex-wrap:wrap;vertical-align:middle}
+.tw-ch button{border:2px solid #f3c3d1;background:#fff;border-radius:12px;padding:2px 12px;font:700 17px Nunito,sans-serif;color:var(--ink)}
+.tw-ch button.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.tw-bank{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}.tw-bank span{background:var(--rose-l);border-radius:10px;padding:2px 10px;font:700 15px Nunito,sans-serif}
+.tw-foot{display:flex;justify-content:center;gap:10px;margin:16px 0 8px;flex-wrap:wrap}
+.tw-qo button.pick{outline:5px solid #2c2140;transform:scale(1.03)}
+.tw-done{text-align:center;padding:10px}.tw-done .tw-emo{font-size:64px}.tw-done h3{font:600 26px Kanit,sans-serif;margin:6px 0}
+.tw-sum{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}.tw-sum div{background:#fff;border:1px solid #fbe3ea;border-radius:16px;padding:10px 18px;min-width:120px}
+.tw-sum b{display:block;font:800 26px Nunito,sans-serif;color:var(--rose-d)}.tw-sum span{font-size:14px;color:var(--muted)}
+.tw-h{font:600 18px Kanit,sans-serif;margin:14px 0 6px}
+.tw-wrong div{background:#fff;border-radius:12px;padding:8px 12px;margin:6px 0;border-left:5px solid #f0a5a5;font-size:16px}
+.tw-wrong div div{padding:0;margin:0;border:0}
+.tw-wrong small{color:var(--muted)}.tw-wrong b{color:var(--ok)}
+.rs-wrap{overflow-x:auto}.rs{border-collapse:collapse;width:100%;font-size:15px;background:#fff}.rs th,.rs td{padding:6px 8px;border-bottom:1px solid #f3d3dc;text-align:left;white-space:nowrap}.rs th{background:var(--rose-l)}.rs .ok{color:var(--ok);font-weight:700}.rs .no{color:#c0392b;font-weight:700}
+
+.ov.focus .tabs{display:none}
+.ov.focus .ph2::before{content:'📝 แบบฝึกท้ายเล่ม + สอบย่อย';font:600 17px Kanit,sans-serif;flex:1}
