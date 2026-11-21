@@ -2,7 +2,7 @@
    <script src="../assets/shell.js" data-root="../" data-wrap="#target" data-active="units"></script>
    Wraps the target (default: body) in the pink sidebar layout used by the home page. */
 (function(){
-  const me_=document.currentScript, R=me_.dataset.root||'', W=me_.dataset.wrap, ACT=me_.dataset.active||'';
+  const me_=document.currentScript, R=me_.dataset.root||'', W=me_.dataset.wrap, ACT=me_.dataset.active||'', EMBED=me_.dataset.mode==='embed';
   const css=document.createElement('link');css.rel='stylesheet';css.href=me_.dataset.css||R+'assets/shell.css';document.head.appendChild(css);
   let teacher=false,me=null;
   try{teacher=sessionStorage.getItem('m3:t')==='1'}catch(e){}
@@ -11,9 +11,12 @@
     slides:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M10 8l4 2-4 2z"/>',prog:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',test:'<path d="M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'};
   const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
-  const items=teacher
+  const items=EMBED
+    ?[['teach','#','slides','สไลด์สอน 8 หน่วย'],['hr'],['site',R,'home','เปิดเว็บไซต์เต็ม ↗']]
+    :teacher
     ?[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','สไลด์สอน'],['results',R+'unit6/#teacher-results','prog','ผลนักเรียน'],['map',R+'unit6/#map','test','ดูบทเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
     :[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['slides',R+'unit6/#slides','slides','Lesson Slides'],['map',R+'unit6/#map','test','Practice & Tests'],['summary',R+'unit6/#summary','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
+  if(EMBED)teacher=true;
   const name=teacher?'Kru Pratchaya':me?me.name:'เลือกผู้ใช้งาน';
   const av=teacher?'KP':me?String(me.name).trim().slice(0,2):'?';
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -28,12 +31,12 @@
       <nav class="shx-nav"></nav><p class="shx-foot">Get Involved! ม.3<br>ครูปรัชญา ทรงบรรพต</p></aside>
       <div class="shx-dim"></div>
       <div class="shx-main"><div class="shx-top"><button class="shx-menu" type="button">☰ เมนู</button><span class="sp"></span>
-        <a class="shx-hello" href="${R}index.html#login"><span class="bell">🔔</span><span><small>Welcome!</small><b>${esc(name)}</b></span><span class="shx-av">${esc(av)}</span></a></div></div>`;
+        <a class="shx-hello" ${EMBED?'':`href="${R}index.html#login"`}><span class="bell">🔔</span><span><small>Welcome!</small><b>${esc(name)}</b></span><span class="shx-av">${esc(av)}</span></a></div></div>`;
     const main=wrap.querySelector('.shx-main');
     while(host.firstChild){const n=host.firstChild;if(n.nodeName==='SCRIPT'&&host===document.body){break}main.appendChild(n)}
     host.insertBefore(wrap,host.firstChild);
     const nav=wrap.querySelector('.shx-nav');
-    const draw=()=>{const a=active();nav.innerHTML=items.map(x=>x[0]==='hr'?'<hr>':`<a href="${x[1]}" class="${x[0]===a?'on':''}">${svg(x[2])}${x[3]}</a>`).join('')};
+    const draw=()=>{const a=active();nav.innerHTML=items.map(x=>x[0]==='hr'?'<hr>':`<a href="${x[1]}" ${x[0]==='site'?'target="_blank" rel="noopener"':''} class="${x[0]===a?'on':''}">${svg(x[2])}${x[3]}</a>`).join('')};
     draw();addEventListener('hashchange',draw);
     wrap.querySelector('.shx-menu').onclick=()=>wrap.classList.toggle('open');
     wrap.querySelector('.shx-dim').onclick=()=>wrap.classList.remove('open');
