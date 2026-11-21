@@ -818,7 +818,7 @@ function viewSummary() {
 }
 
 /* ================= TEACHER ================= */
-let TV = { tab: "slides", i: 0, pin: (() => { try { return sessionStorage.getItem("m3:tp") || ""; } catch (e) { return ""; } })(), rows: null };
+let TV = { tab: "results", i: 0, pin: (() => { try { return sessionStorage.getItem("m3:tp") || ""; } catch (e) { return ""; } })(), rows: null };
 const TEACHER_HASH = "70300ccd47da1a93cc88b1fe027be4dd37727d3d7805f238dd5009f1a9a87d8a";
 async function sha(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, "0")).join(""); }
 function teacherOk() { try { return sessionStorage.getItem("m3:t") === "1"; } catch (e) { return TV.ok; } }
@@ -839,8 +839,8 @@ function teacherGate() {
 function viewTeacher() {
   if (!teacherOk()) return teacherGate();
   const v = $("#v-teacher");
-  v.innerHTML = `<div class="sh"><img src="${ICON("clipboard")}" alt=""><div><span class="k">โหมดครู</span><h2>Unit 6 · สไลด์สอนและผลนักเรียน</h2></div></div>
-    <div class="steps">${[["slides", "📽️ สไลด์สอน"], ["results", "📊 ผลนักเรียน"], ["guide", "📘 โครงสร้างบทเรียน"]].map(([k, t]) => `<button data-t="${k}" class="${TV.tab === k ? "on" : ""}">${t}</button>`).join("")}</div><div id="tb"></div>`;
+  v.innerHTML = `<div class="sh"><img src="${ICON("clipboard")}" alt=""><div><span class="k">โหมดครู</span><h2>Unit 6 · ผลนักเรียน</h2></div><a class="btn p" href="../teach/#u6" style="margin-left:auto">📽️ สไลด์สอน (Teaching Hub)</a></div>
+    <div class="steps">${[["results", "📊 ผลนักเรียน"], ["guide", "📘 โครงสร้างบทเรียน"]].map(([k, t]) => `<button data-t="${k}" class="${TV.tab === k ? "on" : ""}">${t}</button>`).join("")}</div><div id="tb"></div>`;
   $(".steps", v).onclick = e => { const b = e.target.closest("button"); if (b) { TV.tab = b.dataset.t; viewTeacher(); } };
   show("teacher");
   ({ slides: tSlides, results: tResults, guide: tGuide })[TV.tab]($("#tb", v));

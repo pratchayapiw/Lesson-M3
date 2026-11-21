@@ -224,8 +224,11 @@ function viewHome() {
   $("#v-home").innerHTML = `<div class="banner">${scene()}<div class="txt"><h1>M.3 English <span>Learning Platform</span></h1>
       <div class="tagline"><b>English for Real Life</b><small>Learn · Practice · Play · Communicate</small></div></div></div>
     <div class="sec"><h2>📚 Learning Units</h2><a href="#contents">ดูสารบัญทั้งเล่ม →</a></div>
-    <div class="tiles">${UNITS.map(x => `<a class="tile ${x.dir ? "" : "off"}" href="${x.dir ? (role === "teacher" ? x.dir + "#teacher" : (me ? x.dir + "#map" : "#login")) : "#contents"}" style="--bg:${x.bg};--pc:${x.pc}">
-        ${x.dir ? '<span class="open">เปิดเรียน</span>' : '<span class="soon">เร็ว ๆ นี้</span>'}<img src="assets/icons/unit${x.n}.png" alt=""><span class="pn">Unit ${x.n}</span><b>${x.t}</b></a>`).join("")}</div>
+    <div class="tiles">${UNITS.map(x => { const tch = role === "teacher", ok = tch || x.dir;
+        const href = tch ? "teach/#u" + x.n : (me ? x.dir + "#map" : "#login");
+        const tag = tch ? '<span class="open">สไลด์สอน</span>' : x.dir ? '<span class="open">เปิดเรียน</span>' : '<span class="soon">เร็ว ๆ นี้</span>';
+        const inner = `${tag}<img src="assets/icons/unit${x.n}.png" alt=""><span class="pn">Unit ${x.n}</span><b>${x.t}</b>`;
+        return ok ? `<a class="tile" href="${href}" style="--bg:${x.bg};--pc:${x.pc}">${inner}</a>` : `<div class="tile off" aria-disabled="true" title="บทเรียนนี้กำลังจัดทำ" style="--bg:${x.bg};--pc:${x.pc}">${inner}</div>`; }).join("")}</div>
     <div class="dash">${left}${mid}${right}</div>
     <div class="skills-row">${SKILLS.map(([k, n, d, ic]) => `<a class="skill" href="${me || role === "teacher" ? u.dir + "#" + k : "#login"}"><img src="assets/icons/${ic}.png" alt=""><b>${n}</b><small>${d}</small></a>`).join("")}
       <a class="skill" href="${me || role === "teacher" ? u.dir + "#slides" : "#login"}"><img src="assets/icons/gamepad.png" alt=""><b>Slides</b><small>Review & Fun</small></a>
@@ -277,7 +280,7 @@ function viewContents() {
       const acts = !u.dir ? (role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a></div>` : "") : !role ? `<div class="acts"><a class="btn s p" href="#login">เลือกผู้ใช้งาน →</a></div>`
         : role === "teacher" ? `<div class="acts"><a class="btn s p" href="teach/#u${u.n}">📽️ สไลด์สอน</a><a class="btn s" href="${u.dir}#teacher-results">📊 ผลนักเรียน</a><a class="btn s" href="${u.dir}#map">📖 ดูบทเรียน</a></div>`
         : `<div class="acts"><a class="btn s p" href="${u.dir}#map">📖 เข้าบทเรียน</a><a class="btn s" href="${u.dir}#slides">📽️ สไลด์บทเรียน</a></div>`;
-      return `<div class="u ${u.dir ? "" : "off"}" style="--c:${u.c}"><div class="cover" style="--bg:url(assets/bg/unit${u.n}.svg)"><span class="tag">${u.dir ? "เปิดเรียน" : "เร็ว ๆ นี้"}</span><span class="num"><small>UNIT</small>${u.n}</span><img src="assets/icons/unit${u.n}.png" alt="${esc(u.t)}"></div>
+      return `<div class="u ${u.dir || role === "teacher" ? "" : "off"}" style="--c:${u.c}"><div class="cover" style="--bg:url(assets/bg/unit${u.n}.svg)"><span class="tag">${u.dir ? "เปิดเรียน" : role === "teacher" ? "สไลด์สอนพร้อม" : "เร็ว ๆ นี้ · กำลังจัดทำ"}</span><span class="num"><small>UNIT</small>${u.n}</span><img src="assets/icons/unit${u.n}.png" alt="${esc(u.t)}"></div>
         <div class="body"><span class="no">บทที่ ${u.n} · Unit ${u.n} · เทอม ${u.term}</span><b>${u.t}</b><small>${esc(u.th)} · ${u.g}</small>
         ${sc ? `<small><b style="font-size:17px;color:var(--c)">${sc.total.toFixed(2)} / 10</b> · ข้อสอบย่อย ${sc.done}/6</small>` : ""}${acts}</div></div>`; }).join("")}</div>
     <p class="muted" style="margin-top:18px;font-size:15px">เลขบทตรงกับหนังสือ · เทอม 2 เรียน Unit 6–8 · Grammar bootcamp p116 · Pronunciation p128</p>`;
