@@ -588,3 +588,18 @@ html.stu #notesBtn,html.stu .clock{display:none}
 
 .ov.focus .tabs{display:none}
 .ov.focus .ph2::before{content:'📝 แบบฝึกท้ายเล่ม + สอบย่อย';font:600 17px Kanit,sans-serif;flex:1}
+
+/* score report card with anti-cheat markers */
+.tw-card{position:relative;overflow:hidden;background:#fff;border-radius:20px;padding:14px 16px 6px;border:3px solid transparent;background-clip:padding-box;box-shadow:0 0 0 3px #f3a9bf;animation:twb 3s linear infinite}
+@keyframes twb{0%,100%{box-shadow:0 0 0 3px #f3a9bf}33%{box-shadow:0 0 0 3px #8fc7ff}66%{box-shadow:0 0 0 3px #a8e0b5}}
+.tw-wm{position:absolute;inset:-40%;display:flex;flex-wrap:wrap;gap:18px 30px;transform:rotate(-18deg);opacity:.07;pointer-events:none;font:700 15px Kanit,sans-serif;color:var(--rose-d);animation:twm 20s linear infinite}
+@keyframes twm{to{transform:rotate(-18deg) translateX(120px)}}
+.tw-card>*:not(.tw-wm){position:relative}
+.tw-id{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border-bottom:2px dashed #f3d3dc;padding-bottom:10px}
+.tw-id small{display:block;color:var(--muted);font-size:13px}
+.tw-id b{display:block;font:600 22px Kanit,sans-serif}
+.tw-id span{font:500 16px Kanit,sans-serif;color:var(--rose-d)}
+.tw-code{text-align:right}.tw-code b{white-space:nowrap;display:inline-block;font:900 21px Nunito,monospace;letter-spacing:1px;color:#2c2140;background:var(--rose-l);border-radius:10px;padding:2px 10px}
+.tw-time{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:8px}
+.tw-live{color:#c0392b}.tw-live b{font-family:Nunito,monospace}
+.tw-note{font-size:13px;color:var(--muted);text-align:center;margin:8px 4px 0}

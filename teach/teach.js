@@ -501,17 +501,29 @@ async function sendTest(r){const first=LS.get('teach:test:u'+unit.n,null);
   if(!first)LS.set('teach:test:u'+unit.n,{score:r.score,max:r.max,at:Date.now()});
   if(!CFG.supabaseUrl||!ME)return 'local';
   const row={unit:'unit'+unit.n+'-test',student_name:ME.name,class:ME.cls,student_no:ME.no,kind:'quiz',skill:'all',score:r.score,max_score:r.max,
-    detail:{part:'workbook+quiz',wb:r.wb,wbMax:r.wbMax,quiz:r.qz,quizMax:r.qzMax,attempt:first?'retry':'first',wrong:r.wrong.slice(0,25).map(w=>w.p+':'+w.ex)}};
+    detail:{part:'workbook+quiz',code:r.code,ts:r.ts,wb:r.wb,wbMax:r.wbMax,quiz:r.qz,quizMax:r.qzMax,attempt:first?'retry':'first',wrong:r.wrong.slice(0,25).map(w=>w.p+':'+w.ex)}};
   try{const x=await fetch(`${CFG.supabaseUrl}/rest/v1/${CFG.table}`,{method:'POST',keepalive:true,headers:{apikey:CFG.supabaseKey,Authorization:`Bearer ${CFG.supabaseKey}`,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(row)});
     if(!x.ok)throw 0;return 'sent'}catch(e){const q=LS.get('m3:queue',[]);q.push(row);LS.set('m3:queue',q.slice(-50));return 'queued'}}
+async function vcode(s){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('m3-check:'+s));return [...new Uint8Array(h)].slice(0,3).map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase()}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(16).slice(0,6).toUpperCase()}}
+let liveT=null;
 async function submitTest(){const r=gradeTest();T.stage='done';const pct=Math.round(r.score/r.max*100);
+  const now=new Date(),ts=now.toISOString(),me=ME||{name:'(ไม่ได้ลงชื่อ)',cls:'-',no:'-'};
+  r.ts=ts;r.code=await vcode([me.name,me.cls,me.no,unit.n,r.score,r.max,ts].join('|'));
+  const dt=now.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'medium'});
+  const wm=Array(18).fill(`<span>${esc(me.name)} · ${esc(me.cls)} · ${esc(me.no)}</span>`).join('');
   const st=pct>=80?'🌟🌟🌟':pct>=70?'🌟🌟':pct>=50?'🌟':'💪';
-  T.html=`<div class="tw-done"><div class="tw-emo">${st}</div><h3>คะแนนรวม ${r.score} / ${r.max} (${pct}%)</h3>
+  T.html=`<div class="tw-card"><div class="tw-wm" aria-hidden="true">${wm}</div>
+   <div class="tw-id"><div><small>ใบรายงานคะแนน · Unit ${unit.n} ${esc(unit.title)}</small><b>${esc(me.name)}</b><span>ชั้น ${esc(me.cls)} · เลขที่ ${esc(me.no)}</span></div>
+   <div class="tw-code"><small>รหัสตรวจสอบ</small><b>${r.code.slice(0,3)}-${r.code.slice(3)}</b></div></div>
+   <div class="tw-time"><span>📤 ส่งเมื่อ ${dt}</span><span class="tw-live">🔴 เวลาขณะนี้ <b id="twClock"></b></span></div>
+   <div class="tw-done"><div class="tw-emo">${st}</div><h3>คะแนนรวม ${r.score} / ${r.max} (${pct}%)</h3>
    <div class="tw-sum"><div><b>${r.wb}/${r.wbMax}</b><span>① แบบฝึกท้ายเล่ม</span></div><div><b>${r.qz}/${r.qzMax}</b><span>② สอบย่อย</span></div><div><b>${pct>=70?'ผ่าน ✅':'ยังไม่ผ่าน'}</b><span>เกณฑ์ 70%</span></div></div>
-   <p id="twSent" class="muted">กำลังส่งคะแนน…</p></div>
+   <p id="twSent" class="muted">กำลังส่งคะแนน…</p></div></div>
+   <p class="tw-note">👩‍🏫 ครูตรวจได้: ชื่อและรหัสตรวจสอบต้องตรงกับตาราง “ผลสอบนักเรียน” ของครู · นาฬิกาสีแดงเดินอยู่ตลอด (ภาพที่ถ่ายไว้จะไม่เดิน)</p>
    ${r.wrong.length?`<h4 class="tw-h">ข้อที่ต้องทบทวน (${r.wrong.length})</h4><div class="tw-wrong">${r.wrong.map(w=>`<div><small>${w.p==='wb'?'แบบฝึก '+esc(w.ex):'สอบย่อย '+esc(w.ex)}</small><div>${esc(w.q)}</div><div>คำตอบของฉัน: <s>${esc(w.your)}</s> → <b>${esc(w.a)}</b>${w.why?` <small>(${esc(w.why)})</small>`:''}</div></div>`).join('')}</div>`:'<p style="text-align:center">ถูกทุกข้อ เก่งมาก! 🎉</p>'}
    <div class="tw-foot"><button class="btn alt" id="twAgain">↺ ทำอีกครั้ง (ฝึก)</button></div>`;
   drawTest();if(pct>=70)confetti(120);
+  clearInterval(liveT);const tick=()=>{const c=$('#twClock');if(!c){clearInterval(liveT);return}c.textContent=new Date().toLocaleTimeString('th-TH')};tick();liveT=setInterval(tick,1000);
   const s=await sendTest(r);const el=$('#twSent');if(el)el.textContent=s==='sent'?'✅ ส่งคะแนนถึงครูแล้ว':s==='queued'?'📶 ยังส่งไม่ได้ (ไม่มีอินเทอร์เน็ต) ระบบจะลองส่งใหม่':'บันทึกในเครื่องนี้แล้ว'}
 document.addEventListener('input',e=>{const t=e.target;if(T&&t.classList.contains('tw-in')){T.ans[+t.dataset.k]=t.value;const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+Object.keys(T.ans).filter(k=>String(T.ans[k]).trim()!=='').length+'/'+T.items.length}});
 document.addEventListener('click',e=>{const t=e.target;if(!T)return;
@@ -531,14 +543,14 @@ async function initResults(){const b=$('#rsBody');if(!b)return;let pin='';try{pi
   try{const r=await fetch(`${CFG.supabaseUrl}/rest/v1/rpc/${CFG.teacherFn}`,{method:'POST',headers:{apikey:CFG.supabaseKey,Authorization:`Bearer ${CFG.supabaseKey}`,'Content-Type':'application/json'},body:JSON.stringify({p_pin:pin,p_unit:'unit'+unit.n+'-test'})});
     if(!r.ok)throw new Error(r.status===400||r.status===404?'ต้องเข้าโหมดครูด้วยรหัสจากหน้าแรกก่อน':'โหลดไม่ได้ ('+r.status+')');
     const rows=(await r.json()).slice().sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at)));const by={};
-    rows.forEach(x=>{const k=(x.class||'')+'|'+(x.student_no||'')+'|'+x.student_name;(by[k]=by[k]||{c:x.class,no:x.student_no,n:x.student_name,first:x,last:x,times:0});by[k].last=x;by[k].times++});
+    rows.forEach(x=>{const k=(x.class||'')+'|'+(x.student_no||'')+'|'+x.student_name;(by[k]=by[k]||{c:x.class,no:x.student_no,n:x.student_name,first:x,last:x,times:0,codes:[]});by[k].last=x;by[k].times++;if((x.detail||{}).code)by[k].codes.push(x.detail.code)});
     const list=Object.values(by).sort((a,b)=>String(a.c).localeCompare(String(b.c))||(parseInt(a.no)||0)-(parseInt(b.no)||0));
     if(!list.length){b.innerHTML='<p class="sub">ยังไม่มีนักเรียนส่งแบบฝึก + สอบย่อย ของหน่วยนี้</p>';return}
     const d=x=>x.detail||{};
     b.innerHTML=`<div class="row" style="margin-bottom:8px"><b>${list.length} คน</b><span style="flex:1"></span><button class="btn alt" id="rsCsv">⬇️ ดาวน์โหลด CSV</button></div>
-    <div class="rs-wrap"><table class="rs"><tr><th>ห้อง</th><th>เลขที่</th><th>ชื่อ</th><th>แบบฝึก</th><th>สอบย่อย</th><th>รวม (ครั้งแรก)</th><th>%</th><th>ทำ</th></tr>
-    ${list.map(s=>{const f=s.first,p=Math.round(f.score/f.max_score*100);return `<tr><td>${esc(s.c)}</td><td>${esc(s.no)}</td><td>${esc(s.n)}</td><td>${d(f).wb}/${d(f).wbMax}</td><td>${d(f).quiz}/${d(f).quizMax}</td><td><b>${f.score}/${f.max_score}</b></td><td class="${p>=70?'ok':'no'}">${p}%</td><td>${s.times}</td></tr>`}).join('')}</table></div>`;
-    $('#rsCsv').onclick=()=>{const csv='\ufeffห้อง,เลขที่,ชื่อ,แบบฝึก,สอบย่อย,รวม,เต็ม,เปอร์เซ็นต์,จำนวนครั้ง\n'+list.map(s=>{const f=s.first;return [s.c,s.no,s.n,d(f).wb,d(f).quiz,f.score,f.max_score,Math.round(f.score/f.max_score*100),s.times].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')}).join('\n');
+    <div class="rs-wrap"><table class="rs"><tr><th>ห้อง</th><th>เลขที่</th><th>ชื่อ</th><th>แบบฝึก</th><th>สอบย่อย</th><th>รวม (ครั้งแรก)</th><th>%</th><th>ทำ</th><th>รหัสตรวจสอบ (ทุกครั้ง)</th><th>ส่งล่าสุด</th></tr>
+    ${list.map(s=>{const f=s.first,p=Math.round(f.score/f.max_score*100);return `<tr><td>${esc(s.c)}</td><td>${esc(s.no)}</td><td>${esc(s.n)}</td><td>${d(f).wb}/${d(f).wbMax}</td><td>${d(f).quiz}/${d(f).quizMax}</td><td><b>${f.score}/${f.max_score}</b></td><td class="${p>=70?'ok':'no'}">${p}%</td><td>${s.times}</td><td>${s.codes.map(c=>esc(c.slice(0,3)+'-'+c.slice(3))).join(' ')}</td><td>${esc(new Date(s.last.created_at).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}))}</td></tr>`}).join('')}</table></div>`;
+    $('#rsCsv').onclick=()=>{const csv='\ufeffห้อง,เลขที่,ชื่อ,แบบฝึก,สอบย่อย,รวม,เต็ม,เปอร์เซ็นต์,จำนวนครั้ง,รหัสตรวจสอบ\n'+list.map(s=>{const f=s.first;return [s.c,s.no,s.n,d(f).wb,d(f).quiz,f.score,f.max_score,Math.round(f.score/f.max_score*100),s.times,s.codes.join(' ')].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')}).join('\n');
       const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='unit'+unit.n+'-results.csv';a.click()}
   }catch(er){b.innerHTML=`<div class="fb"><b class="no">${esc(er.message)}</b></div>`}}
 
