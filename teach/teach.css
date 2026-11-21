@@ -656,3 +656,9 @@ html.stu #notesBtn,html.stu .clock{display:none}
 .vg-rev{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
 .vg-r{border:1px solid #f3c3d1;background:#fff;border-radius:12px;padding:4px 10px;font:600 14px Sarabun,sans-serif;cursor:pointer}
 @media (max-width:420px){.vg-w,.vg-m{font-size:14px;min-height:50px;padding:5px 8px}.vg-m{font-size:14px}.vg-w span{font-size:20px}}
+
+.disc.wide{grid-template-columns:1fr;gap:14px;align-content:start}
+.disc.wide .qs{flex-direction:row;flex-wrap:wrap;gap:10px}
+.disc.wide .q,.disc.wide .tip{flex:1 1 45%;margin:0}
+.disc.wide .rtable{font-size:30px;border-spacing:0 6px}
+.disc.wide .rtable td,.disc.wide .rtable th{padding:7px 16px}

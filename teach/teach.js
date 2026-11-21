@@ -31,6 +31,10 @@ function expandGD(u){
       notes:{goal:'วิเคราะห์ข้อผิดพลาดที่พบบ่อย ให้นักเรียนอธิบายเหตุผลเอง',say:['What is wrong? Why? Can you fix it?'],do:['ให้กลุ่มหาจุดผิด 1 นาที (กดจับเวลา)','กด → ขีดฆ่าจุดผิด แล้วกดอีกครั้งเพื่อแสดงประโยคที่ถูกและเหตุผล','ย้อนตรวจประโยคนักเรียนที่จดไว้ตอน Step 0','ให้คะแนนกลุ่มที่แก้ถูก'],ans:g.detect.map(d=>d[1].replace(/\*\*/g,'')).join('<br>')},tools:['timer','score','detect']});
     out.push({sec:g.sec,type:'rule',gstep:'rule',min:4,title:'Build the rule',sub:nm,kick:'Step 5 · Rule · สรุปกฎ',formula:g.rule.formula,table:g.rule.table,qs:g.rule.qs,tip:g.rule.tip,ex:g.rule.ex,
       notes:{goal:'ให้นักเรียนสรุปกฎจากสิ่งที่ค้นพบ แล้วครูยืนยัน',say:['So, what is the rule? Tell me!'].concat(g.rule.say||[]),do:['ให้ตัวแทนกลุ่มบอกกฎก่อน แล้วกด → เปิดสูตร/ตารางทีละส่วน','ใช้ 🧩 สร้างสูตร ให้ออกมาวางบนจอ','ให้จดสรุปลงสมุด'],ans:(g.rule.qs||[]).map(q=>(q.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['puzzle']});
+    ((window.TEACH_GD_MORE||{})[u.n]||{})[g.sec]&&TEACH_GD_MORE[u.n][g.sec].forEach((m,mi,arr)=>out.push({sec:g.sec,type:'rule',gstep:'rule',min:4,title:m.title,sub:nm,kick:'Step 5 · Rule '+(mi+2)+'/'+(arr.length+1)+' · รายละเอียด',ex:m.ex,table:m.table,qs:m.qs,tip:m.tip,formula:m.formula,
+      notes:{goal:'ลงรายละเอียดกฎ: '+m.title,say:['Look at the examples. What is the rule?'],do:['ให้นักเรียนอ่านตัวอย่าง แล้วตอบคำถาม 🔍 ก่อนกด → เฉลย','ให้ยกตัวอย่างประโยคของตัวเอง 1 ประโยค','ให้จดตาราง/กฎลงสมุด'],ans:(m.qs||[]).map(q=>(q.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['picker']}));
+    {const pr=((window.TEACH_GD_PRAC||{})[u.n]||{})[g.sec];if(pr)out.push({sec:g.sec,type:'gaps',gstep:'practice',min:5,title:'Practice: all the rules',sub:nm,kick:'Practice · ฝึกทุกกฎ',items:pr,
+      notes:{goal:'ฝึกทุกกฎของเรื่องนี้ (รวมรายละเอียด)',say:['Complete the sentences. Think about the rules.'],do:['ทำในสมุด 3 นาที','สุ่มเลขที่ตอบ แล้วกด → เฉลยทีละข้อ','ข้อที่ผิดเยอะ ย้อนไปดูสไลด์ Rule ที่เกี่ยวข้อง'],ans:pr.map(s=>(s.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['timer','picker']})}
   }
   u.slides=out.filter(s=>!['read','listen','speak','write'].includes(s.sec));
   // vocabulary bank of the unit (cards) for matching
@@ -184,7 +188,7 @@ const R={
  rule(sl){
    const t=sl.table?`<table class="rtable st"><tr>${sl.table.head.map(h=>`<th>${h}</th>`).join('')}</tr>${sl.table.rows.map(r=>`<tr>${r.map(c=>`<td>${md(c)}</td>`).join('')}</tr>`).join('')}</table>`:'';
    const f=sl.formula?`<div class="formula st">${sl.formula.map(p=>p.startsWith('+')||p==='?'||p===','?`<span class="p">${p}</span>`:`<span class="${/^c\d:/.test(p)?p.slice(0,2):''}">${p.replace(/^c\d:/,'')}</span>`).join('')}</div>`:'';
-   return `<div class="sl">${head(sl,'Discovery · ค้นพบกฎด้วยตนเอง')}<div class="body"><div class="disc">
+   return `<div class="sl">${head(sl,'Discovery · ค้นพบกฎด้วยตนเอง')}<div class="body"><div class="disc ${sl.table&&!(sl.ex||[]).length?'wide':''}">
    <div class="exs ${sl.table&&(sl.ex||[]).length>2?'g2':''}">${(sl.ex||[]).map((e,i)=>`<div class="ex an" style="--i:${2+i}">${md(e)}</div>`).join('')}${f}${t}</div>
    <div class="qs">${(sl.qs||[]).map(q=>`<div class="q st"><b>🔍</b> ${md(q)}</div>`).join('')}${sl.tip?`<div class="tip st">💡 ${md(sl.tip)}</div>`:''}</div>
    </div></div></div>`},
