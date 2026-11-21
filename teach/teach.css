@@ -629,3 +629,30 @@ html.stu #notesBtn,html.stu .clock{display:none}
 .pk-prog{margin-top:16px;background:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 10px 28px rgba(200,50,90,.10)}
 .pk-prog.hidden{display:none}.pk-prog h2{font:600 21px Kanit,sans-serif;margin:0}.pk-prog .muted{color:var(--muted);font-size:14px;margin:4px 0 10px}
 .pk-prog a{color:var(--rose-d)}.pk-prog .ok{color:var(--ok);font-weight:700}.pk-prog .no{color:#c0392b;font-weight:700}
+
+/* vocabulary pair game */
+.vg{background:linear-gradient(160deg,#fff 0%,#fff1f5 100%);border-radius:18px;padding:10px;margin:6px 0 4px;border:2px solid #fbe3ea}
+.vg-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 15px Kanit,sans-serif;color:var(--rose-d);flex-wrap:wrap}
+.vg-pts{font:800 18px Nunito,sans-serif;color:#b8860b}
+.vg-combo{display:inline-block;margin-left:6px;color:#e25822;animation:vgc .5s ease}
+@keyframes vgc{from{transform:scale(1.8)}to{transform:none}}
+.vg-bar{height:8px;background:#f8dbe3;border-radius:6px;overflow:hidden;margin:6px 0 10px}.vg-bar i{display:block;height:100%;background:linear-gradient(90deg,#e2457a,#e7a21d);transition:width .4s}
+.vg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vg-col{display:flex;flex-direction:column;gap:8px}
+.vg-w,.vg-m{min-height:54px;border:2px solid #f3c3d1;background:#fff;border-radius:14px;padding:6px 10px;font:800 16px Nunito,sans-serif;color:var(--ink);display:flex;align-items:center;gap:8px;text-align:left;cursor:pointer;transition:transform .15s,opacity .35s;box-shadow:0 3px 0 #f3c3d1}
+.vg-m{font:500 16px Kanit,sans-serif}
+.vg-w span{font-size:24px}
+.vg-w .vg-ear{font-size:26px}.vg-w small{font-size:20px;opacity:.85}
+.vg-w.sel{border-color:#e7a21d;background:#fff8e1;transform:translateY(-2px);box-shadow:0 0 0 4px rgba(231,162,29,.3)}
+.vg-w:active,.vg-m:active{transform:scale(.97)}
+.vg-m.bad{animation:shake .4s;border-color:#e57373;background:#fff1f1}
+.vg-m.nudge{animation:shake .3s}
+.pop{animation:vgp .38s ease forwards}
+@keyframes vgp{50%{transform:scale(1.1);background:#dff5e6;border-color:#4caf50}100%{transform:scale(.6);opacity:0}}
+.vg-w.gone,.vg-m.gone{visibility:hidden}
+.vg-tip{font-size:13px;color:var(--muted);margin:8px 2px 0;text-align:center}
+.vg-end{text-align:center;padding:10px}.vg-emo{font-size:56px;animation:float 3s ease-in-out infinite}
+.vg-end b{display:block;font:600 22px Kanit,sans-serif;color:var(--rose-d)}.vg-end span{font-size:15px;color:var(--muted)}
+.vg-rev{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.vg-r{border:1px solid #f3c3d1;background:#fff;border-radius:12px;padding:4px 10px;font:600 14px Sarabun,sans-serif;cursor:pointer}
+@media (max-width:420px){.vg-w,.vg-m{font-size:14px;min-height:50px;padding:5px 8px}.vg-m{font-size:14px}.vg-w span{font-size:20px}}

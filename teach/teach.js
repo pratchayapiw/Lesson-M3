@@ -497,29 +497,57 @@ function expand(s){s=String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/
   return [...new Set([s,a,a.replace(/'s\b/g,' has'),a.replace(/'s\b/g,' is')])].map(x=>x.replace(/^(i|you|we|they|he|she|it) /,'').replace(/\s+/g,' ').trim()).concat([s])}
 function same(given,ans){const g=expand(given),a=expand(ans);return g.some(x=>x&&a.includes(x))}
 const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+function allWords(){const out=[],seen=new Set();const add=c=>{const w=String(c[1]||'').trim(),k=w.toLowerCase();if(w&&c[2]&&!seen.has(k)){seen.add(k);out.push([c[0],w,c[2]])}};
+  (unit.vwords||[]).forEach(add);(unit.flash||[]).forEach(add);return out}
+/* vocabulary pair game: rounds of 6, half the rounds are listen-only; first-try matches are the practice score */
+function vgInit(words,start){T.vg={words,start,per:6,round:0,sel:null,done:{},miss:{},streak:0,best:0,pts:0,t0:Date.now()}}
+function vgRounds(){const g=T.vg;return Math.ceil(g.words.length/g.per)}
+function vgDraw(){const g=T.vg,box=$('#vgame');if(!g||!box)return;const R=vgRounds();
+  if(g.round>=R){const ok=g.words.filter((w,i)=>!g.miss[i]).length;const pct=Math.round(ok/g.words.length*100);
+    box.innerHTML=`<div class="vg-end"><div class="vg-emo">${pct>=80?'🏆':pct>=60?'🌟':'💪'}</div><b>จับคู่ครบ ${g.words.length} คำ!</b><span>ถูกตั้งแต่ครั้งแรก ${ok}/${g.words.length} คำ · คอมโบสูงสุด 🔥${g.best} · ${Math.round((Date.now()-g.t0)/1000)} วินาที</span>
+      ${pct<100?`<p class="vg-tip">คำที่ควรทบทวน (แตะเพื่อฟังเสียง)</p><div class="vg-rev">${g.words.map((w,i)=>g.miss[i]?`<button class="vg-r" data-say="${esc(w[1])}">${w[0]} ${esc(w[1])} = ${esc(w[2])} 🔊</button>`:'').join('')}</div>`:''}</div>`;return}
+  const idx=[...Array(g.words.length).keys()].slice(g.round*g.per,(g.round+1)*g.per);
+  const listen=g.round%2===1;g.order=g.order&&g.order.round===g.round?g.order:{round:g.round,L:shuffle(idx.slice()),Rt:shuffle(idx.slice())};
+  box.innerHTML=`<div class="vg-head"><span>รอบ ${g.round+1}/${R} · ${listen?'🎧 ฟังแล้วจับคู่ความหมาย':'👀 จับคู่คำกับความหมาย'}</span><span class="vg-pts">⭐ ${g.pts} ${g.streak>1?`<b class="vg-combo">🔥x${g.streak}</b>`:''}</span></div>
+   <div class="vg-bar"><i style="width:${Object.keys(g.done).length/g.words.length*100}%"></i></div>
+   <div class="vg-grid"><div class="vg-col">${g.order.L.map(i=>`<button class="vg-w ${g.done[i]?'gone':''} ${g.sel===i?'sel':''}" data-vw="${i}">${listen?`<span class="vg-ear">🔊</span><small>${g.words[i][0]}</small>`:`<span>${g.words[i][0]}</span>${esc(g.words[i][1])}`}</button>`).join('')}</div>
+   <div class="vg-col">${g.order.Rt.map(i=>`<button class="vg-m ${g.done[i]?'gone':''}" data-vm="${i}">${esc(g.words[i][2])}</button>`).join('')}</div></div>
+   <p class="vg-tip">${listen?'แตะ 🔊 เพื่อฟัง แล้วแตะความหมายที่ตรงกัน':'แตะคำศัพท์ (มีเสียงอ่าน) แล้วแตะความหมายที่ตรงกัน'} · จับคู่ถูกติดกันได้คอมโบ 🔥</p>`}
+function vgTone(ok){try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.type=ok?'triangle':'sawtooth';
+  o.frequency.setValueAtTime(ok?660:200,a.currentTime);if(ok)o.frequency.setValueAtTime(990,a.currentTime+.09);g.gain.setValueAtTime(.12,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.25);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.26)}catch(e){}}
+document.addEventListener('click',e=>{if(!T||!T.vg)return;const g=T.vg,t=e.target;
+  const w=t.closest('.vg-w');if(w&&!w.classList.contains('gone')&&!g.done[+w.dataset.vw]&&!g.busy){g.sel=+w.dataset.vw;$$('.vg-w').forEach(b=>b.classList.toggle('sel',b===w));say(g.words[g.sel][1]);return}
+  const m=t.closest('.vg-m');if(m&&!m.classList.contains('gone')&&!g.done[+m.dataset.vm]&&!g.busy){if(g.sel==null){m.classList.remove('nudge');m.offsetWidth;m.classList.add('nudge');return}
+    const i=+m.dataset.vm;if(i===g.sel){g.done[i]=1;g.streak++;g.best=Math.max(g.best,g.streak);g.pts+=10+(g.streak>1?5*(g.streak-1):0);T.ans[g.start+i]=!g.miss[i];
+      vgTone(true);const wb=$(`.vg-w[data-vw="${i}"]`);[wb,m].forEach(x=>x&&x.classList.add('pop'));g.sel=null;
+      const left=g.order.L.filter(k=>!g.done[k]).length;
+      if(!left)g.busy=1;setTimeout(()=>{if(!left){g.round++;g.busy=0;confetti(50)}vgDraw();const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length},left?380:700)}
+    else{g.miss[g.sel]=1;g.streak=0;vgTone(false);m.classList.remove('bad');m.offsetWidth;m.classList.add('bad');const p=$('.vg-pts');if(p)p.innerHTML='⭐ '+g.pts}
+    return}
+});
 function practiceSets(){const sets=[];
-  const vw=shuffle((unit.vwords||[]).slice()).slice(0,8);
-  if(vw.length)sets.push({type:'vm',part:'vocab',title:'① คำศัพท์ · จับคู่คำกับความหมาย',words:vw,opts:shuffle(vw.map(w=>w[2]))});
+  const vw=shuffle(allWords());
+  if(vw.length)sets.push({type:'vgame',part:'vocab',title:'① เกมจับคู่คำศัพท์ · ครบ '+vw.length+' คำของหน่วย',words:vw});
   const vc=(window.TEACH_VCTX||{})[unit.n];if(vc)sets.push({type:'choose',part:'vocab',title:'② คำศัพท์ในบริบท · เลือกคำที่เหมาะสม',items:vc});
   (unit.wb||[]).forEach(e=>sets.push(Object.assign({part:'grammar'},e,{title:'③ ไวยากรณ์ · '+e.title})));
   return sets}
 function initTest(){clearInterval(retakeT);
   const sets=practiceSets(),items=[];
-  sets.forEach((e,ei)=>{if(e.type==='vm'){e.words.forEach((w,ti)=>items.push({kind:'vm',ei,ti,part:e.part,a:w[2],q:w[1]}));return}
+  sets.forEach((e,ei)=>{if(e.type==='vgame'){e.start=items.length;e.words.forEach((w,ti)=>items.push({kind:'vg',ei,ti,part:e.part,a:w[2],q:w[1]}));return}
     e.items.forEach((t,ti)=>{
     if(e.type==='choose')(t.match(/\{\{(.*?)\}\}/g)||[]).forEach(m=>{const os=m.slice(2,-2).split('|');items.push({kind:'ch',ei,ti,part:e.part,opts:os.map(o=>o.replace(/\*$/,'')),a:os.findIndex(o=>o.endsWith('*'))})});
     else (t.match(/\[([^\]]+)\]/g)||[]).forEach(m=>items.push({kind:'gap',ei,ti,part:e.part,a:m.slice(1,-1)}))})});
   const prev=LS.get('teach:res:u'+unit.n,null);
   T={sets,items,ans:{},qa:[],qi:0,order:shuffle((unit.quiz||[]).map((_,i)=>i)),stage:'wb',practice:null,attempt:prev&&prev.quiz?prev.quiz.attempts:0};drawTest()}
 function setsHTML(){let k=0;return T.sets.map(e=>`<div class="tw-ex"><h4>${esc(e.title)}</h4>${e.bank?`<div class="tw-bank">${e.bank.map(b=>`<span>${esc(b)}</span>`).join('')}</div>`:''}
-  <ol>${e.type==='vm'?e.words.map(w=>{const id=k++;return `<li class="tw-vm"><span>${w[0]} <b>${esc(w[1])}</b></span><select class="tw-sel" data-k="${id}"><option value="">— เลือกความหมาย —</option>${e.opts.map(o=>`<option ${T.ans[id]===o?'selected':''}>${esc(o)}</option>`).join('')}</select></li>`}).join('')
-   :e.items.map(t=>`<li>${e.type==='choose'?t.replace(/\{\{(.*?)\}\}/g,(m,a)=>{const id=k++;return `<span class="tw-ch" data-k="${id}">${a.split('|').map((o,oi)=>`<button type="button" data-k="${id}" data-o="${oi}" class="${T.ans[id]===oi?'on':''}">${esc(o.replace(/\*$/,''))}</button>`).join('')}</span>`}).replace(/\*\*/g,'')
+  ${e.type==='vgame'?(k+=e.words.length,'<div class="vg" id="vgame"></div>'):''}<ol>${e.type==='vgame'?'':e.items.map(t=>`<li>${e.type==='choose'?t.replace(/\{\{(.*?)\}\}/g,(m,a)=>{const id=k++;return `<span class="tw-ch" data-k="${id}">${a.split('|').map((o,oi)=>`<button type="button" data-k="${id}" data-o="${oi}" class="${T.ans[id]===oi?'on':''}">${esc(o.replace(/\*$/,''))}</button>`).join('')}</span>`}).replace(/\*\*/g,'')
    :t.replace(/\[([^\]]+)\]/g,()=>{const id=k++;return `<input class="tw-in" data-k="${id}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(T.ans[id]||'')}" size="${Math.max(6,T.items[id].a.length+2)}">`}).replace(/\*\*/g,'')}</li>`).join('')}</ol></div>`).join('')}
-const answered=()=>Object.keys(T.ans).filter(k=>String(T.ans[k]).trim()!=='').length;
+const answered=()=>Object.keys(T.ans).filter(k=>T.ans[k]!=null&&String(T.ans[k]).trim()!=='').length;
 function drawTest(){const b=$('#twBody');if(!b||!T)return;const Q=unit.quiz||[];
   if(T.stage==='wb'){b.innerHTML=`<div class="tw-top"><b>📒 แบบฝึก</b><span>ตอบแล้ว ${answered()}/${T.items.length}</span></div>
     <p class="tw-hint">แบบฝึกมีคะแนนให้ดู แต่<b>ไม่นำไปคิด</b>กับแบบทดสอบย่อย · ทำแล้วไปต่อที่แบบทดสอบย่อย</p>${setsHTML()}
-    <div class="tw-foot"><button class="btn big" id="twToQuiz">ต่อไป: 📝 แบบทดสอบย่อย ${Q.length} ข้อ →</button></div>`;return}
+    <div class="tw-foot"><button class="btn big" id="twToQuiz">ต่อไป: 📝 แบบทดสอบย่อย ${Q.length} ข้อ →</button></div>`;
+    const vs=T.sets.find(s=>s.type==='vgame');if(vs){if(!T.vg)vgInit(vs.words,vs.start);vgDraw()}return}
   if(T.stage==='quiz'){const qn=T.order[T.qi],q=Q[qn];b.innerHTML=`<div class="tw-top"><b>📝 แบบทดสอบย่อย${T.attempt?` · ครั้งที่ ${T.attempt+1}`:''}</b><span>ข้อ ${T.qi+1} / ${Q.length}</span></div><div class="tw-bar"><i style="width:${T.qi/Q.length*100}%"></i></div>
     <div class="qzq">${md(q[0])} <button class="spk" data-say="${esc(q[0])}">🔊</button></div>
     <div class="qzo tw-qo">${q[1].map((o,i)=>`<button data-tq="${i}" class="c${i}"><i>${'ABCD'[i]}</i>${md(o)}</button>`).join('')}</div>
@@ -530,8 +558,8 @@ function drawTest(){const b=$('#twBody');if(!b||!T)return;const Q=unit.quiz||[];
     <div class="row" style="justify-content:center">${T.practice?'':'<button class="btn alt" id="twEdit">‹ กลับไปแก้แบบฝึก</button>'}<button class="btn big" id="twSend">📤 ส่งคำตอบ</button></div></div>`;return}
   if(T.stage==='done')b.innerHTML=T.html}
 function gradePractice(){const by={vocab:[0,0],grammar:[0,0]},wrong=[];
-  T.items.forEach((it,i)=>{const g=T.ans[i];const ok=it.kind==='ch'?g===it.a:it.kind==='vm'?g===it.a:same(g||'',it.a);by[it.part][1]++;if(ok)by[it.part][0]++;
-    else{const e=T.sets[it.ei];wrong.push({p:'wb',ex:e.title.split('·')[0].trim(),q:it.kind==='vm'?it.q:e.items[it.ti].replace(/\{\{.*?\}\}|\[[^\]]+\]/g,'____').replace(/\*\*/g,''),your:it.kind==='ch'?(g==null?'—':it.opts[g]):(g||'—'),a:it.kind==='ch'?it.opts[it.a]:it.a})}});
+  T.items.forEach((it,i)=>{const g=T.ans[i];const ok=it.kind==='ch'?g===it.a:it.kind==='vg'?g===true:same(g||'',it.a);by[it.part][1]++;if(ok)by[it.part][0]++;
+    else{const e=T.sets[it.ei];wrong.push({p:'wb',ex:e.title.split('·')[0].trim(),q:it.kind==='vg'?it.q+' = '+it.a:e.items[it.ti].replace(/\{\{.*?\}\}|\[[^\]]+\]/g,'____').replace(/\*\*/g,''),your:it.kind==='ch'?(g==null?'—':it.opts[g]):it.kind==='vg'?(g===false?'จับคู่ผิดครั้งแรก':'ยังไม่ได้เล่น'):(g||'—'),a:it.kind==='ch'?it.opts[it.a]:it.a})}});
   return {vocab:by.vocab[0],vocabMax:by.vocab[1],gram:by.grammar[0],gramMax:by.grammar[1],s:by.vocab[0]+by.grammar[0],m:by.vocab[1]+by.grammar[1],wrong}}
 function gradeQuiz(){const Q=unit.quiz||[];let s=0;const wrong=[];
   T.order.forEach((qn,i)=>{const q=Q[qn];if(T.qa[i]===q[2])s++;else wrong.push({p:'quiz',ex:'ข้อ '+(i+1),q:q[0].replace(/\*\*/g,''),your:T.qa[i]==null?'—':q[1][T.qa[i]],a:q[1][q[2]],why:q[3]})});
