@@ -60,25 +60,27 @@ async function flushQueue() {
 }
 
 /* ---------------- speech: text-to-speech ---------------- */
+const BADV=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy|Grandma|Grandpa|Rocko|Shelley|\bFlo\b|Eddy|Reed|Sandy|Deranged|Hysterical|Pipe Organ/i;
+function rankVoices(vs){const sc=v=>(BADV.test(v.name)?-100:0)+(/Google US English|Samantha|Aria|Jenny|Zira|Natural|Enhanced|Premium|Ava|Allison|Susan/i.test(v.name)?6:0)+(/Microsoft.*Online|Google/i.test(v.name)?3:0)+(/en[-_]US/i.test(v.lang)?3:/en[-_]GB/i.test(v.lang)?2:0)+(v.localService?1:0);
+  return vs.filter(v=>/^en/i.test(v.lang)&&!BADV.test(v.name)).sort((a,b)=>sc(b)-sc(a))}
+function speakClean(t){return String(t).replace(/<[^>]+>/g,'').replace(/\*\*|\{|\}/g,'').replace(/\[([^\]|]+)[^\]]*\]/g,'$1').replace(/_{2,}/g,' blank ').replace(/\s\/\s/g,' or ').replace(/\s*\([^)]*\)/g,'').replace(/[’‘]/g,"'").replace(/ '(ve|s|ll|re|m|d|t)\b/g,"'$1").replace(/\s+/g,' ').trim()}
 let VOICES = [];
-function loadVoices() { try { VOICES = speechSynthesis.getVoices().filter(v => /^en(-|_)/i.test(v.lang)); } catch (e) { VOICES = []; } }
+function loadVoices() { try { VOICES = rankVoices(speechSynthesis.getVoices()); } catch (e) { VOICES = []; } }
 if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-function voice(i) {
-  if (!VOICES.length) return null;
-  const pref = VOICES.filter(v => /en-(US|GB)/i.test(v.lang));
-  const list = pref.length ? pref : VOICES;
-  return list[i % list.length];
-}
+function voice(i) { if (!VOICES.length) return null; return VOICES[i ? i % Math.min(VOICES.length, 4) : 0]; }
 function say(text, o = {}) {
   return new Promise(res => {
     if (!("speechSynthesis" in window)) { toast("อุปกรณ์นี้ไม่รองรับเสียงอ่าน"); return res(); }
     try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g, ""));
-      u.lang = "en-US"; u.rate = o.rate || 0.9; u.pitch = o.pitch || 1;
-      const v = voice(o.voice || 0); if (v) u.voice = v;
-      u.onend = res; u.onerror = res;
-      speechSynthesis.speak(u);
+      const busy = speechSynthesis.speaking || speechSynthesis.pending;
+      if (busy) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(speakClean(text));
+      u.lang = "en-US"; u.rate = o.rate || 0.85; u.pitch = o.pitch || 1;
+      const v = voice(o.voice || 0); if (v) { u.voice = v; u.lang = v.lang; }
+      let done = false; const fin = () => { if (!done) { done = true; res(); } };
+      u.onend = fin; u.onerror = fin;
+      setTimeout(fin, 1500 + speakClean(text).length * 120);
+      setTimeout(() => { try { speechSynthesis.resume(); } catch (e) {} speechSynthesis.speak(u); }, busy ? 80 : 0);
     } catch (e) { res(); }
   });
 }
@@ -912,7 +914,7 @@ function slideViewer(el, teacher) {
     $("#ct", el).textContent = `หน้า ${cur + 1} / ${S.length}`;
     if (teacher) $("#nts", el).innerHTML = `<b>สไลด์ ${cur + 1}:</b> ${esc(S[cur].notes)}`;
     $$("#pkr button, #pk button", el).forEach(b => b.classList.toggle("on", +b.dataset.n === cur));
-    const on = $(`#pkr button[data-n="${cur}"]`, el); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest", inline: "center" });
+    const on = $(`#pkr button[data-n="${cur}"]`, el), pr = $("#pkr", el); if (on && pr) pr.scrollTo({ left: on.offsetLeft - pr.clientWidth / 2 + on.offsetWidth / 2, behavior: "smooth" });
     $("#pv", el).disabled = cur === 0; $("#nx", el).disabled = cur === S.length - 1;
     fit();
   };

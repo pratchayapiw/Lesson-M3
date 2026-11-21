@@ -61,9 +61,6 @@ slides:[
  model:['Dear Ben,','I’m at a summer camp **where** you can do lots of outdoor activities. I’ve **already** been zip lining **which** was amazing!','I’m sharing a room with three boys **who** are really funny. We’ve swum in the lake every day.','See you on the 21st!','Max'],
  tips:['<b>who</b> = คน → boys <b>who</b> are funny','<b>where</b> = สถานที่ → a camp <b>where</b> you can …','<b>which</b> = สิ่งของ/เรื่อง → zip lining <b>which</b> was amazing','โครงสร้าง: Dear … → กิจกรรม → คน → สถานที่ → ปิดท้าย + ชื่อ'],
  notes:{goal:'วิเคราะห์โปสการ์ดตัวอย่าง และใช้ who/where/which',say:['Who is Max writing to?','Find who, where and which. What do they describe?'],do:['อ่านด้วยกัน แล้วกด → แสดงทิปทีละข้อ','งาน: เขียนโปสการ์ด 60–80 คำ เล่าประสบการณ์ 3 อย่าง ใช้ who/where/which อย่างน้อย 3 ครั้ง'],ans:'who → people · where → place · which → thing/activity'},tools:['scramble','timer']},
-{sec:'review',type:'gaps',min:4,title:'who, where or which?',
- items:['I met a boy [who] knows you.','It’s a camp [where] you can canoe.','We went zip lining, [which] was amazing.','She’s the singer [who] won the show.','This is the café [where] we met.'],
- notes:{goal:'ทบทวน relative pronouns',say:['A boy… is it a person, a place or a thing?'],do:['ให้ทั้งห้องตอบพร้อมกัน แล้วกด → เฉลย'],ans:'who · where · which · who · where'},tools:['picker']},
 {sec:'review',type:'exit',min:4,title:'Exit ticket 3-2-1',items:[['3','new words','เขียนคำศัพท์ใหม่ 3 คำ'],['2','sentences','I have … / I have never …'],['1','question','Have you ever …? ถามครู 1 ข้อ']],
  notes:{goal:'ประเมินท้ายคาบ',say:['Before you go, write your exit ticket.'],do:['แจกกระดาษโน้ต ให้เขียน 3-2-1 แล้วแปะบนกระดานก่อนออกจากห้อง','สุ่มอ่าน 3–4 ใบ ชมเชย'],ans:''},tools:['timer','picker']}
 ],

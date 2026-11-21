@@ -521,3 +521,33 @@ body:has(#app:not(.hidden)) .shx-petals{display:none}
   .main:not(.nonotes) .notes{display:block}
   .stage{height:auto}
 }
+
+/* choose */
+.chz{display:inline-flex;align-items:center;gap:8px;margin:0 6px;vertical-align:middle}
+.chz i{font-style:normal;color:#c9b5bf}
+.chz .o{border:3px solid #f3c3d1;background:#fff;border-radius:16px;padding:2px 16px;font:800 34px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.chz .o.ok{border-color:var(--ok);background:#dff5e6;color:#1d6b3a}
+.chz .o.no{border-color:#f0b4b4;background:#fff1f1;color:#b98a8a;text-decoration:line-through}
+/* quiz CTA + tool */
+.qzcta{flex:1;display:flex;align-items:center;justify-content:center;gap:60px}
+.qzart{font-size:260px;filter:drop-shadow(0 18px 20px rgba(0,0,0,.15))}.qzart span{display:inline-block;animation:float 4s ease-in-out infinite}
+.qzinfo b{display:block;font:600 52px Kanit,sans-serif}
+.qzinfo span{display:block;font-size:32px;color:var(--muted);margin:6px 0 30px}
+.qzbtns{display:flex;gap:18px}
+.qzbtns button{border:0;border-radius:40px;padding:18px 38px;font:600 34px Kanit,sans-serif;background:#fff;color:var(--rose-d);box-shadow:0 8px 20px rgba(200,50,90,.18)}
+.qzbtns button.go{background:linear-gradient(135deg,#e04a72,#c8325a);color:#fff}
+.qzn{font:600 20px Kanit,sans-serif;color:var(--rose-d)}
+.qzq{font:800 clamp(22px,3.4vw,38px)/1.3 Nunito,sans-serif;background:#fff;border-radius:20px;padding:20px 24px;margin:12px 0 16px;box-shadow:0 6px 18px rgba(200,50,90,.1)}
+.qzo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qzo button{border:0;border-radius:18px;padding:16px 18px;font:800 clamp(18px,2.6vw,28px) Nunito,sans-serif;color:#fff;text-align:left;display:flex;gap:12px;align-items:center;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.qzo button i{font-style:normal;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.3);display:grid;place-items:center;flex:0 0 44px}
+.qzo .c0{background:#e2457a}.qzo .c1{background:#3a7fd0}.qzo .c2{background:#e7a21d}.qzo .c3{background:#4f9b3a}
+.qzo button.ok{outline:6px solid #1d6b3a;transform:scale(1.03)}
+.qzo button.no{opacity:.45}
+.qzend{text-align:center;padding:30px}.qzend .big{font-size:110px}.qzend h3{font:600 34px Kanit,sans-serif;margin:6px}.qzend p{font-size:24px}
+@media (max-width:600px){.qzo{grid-template-columns:1fr}}
+/* notes settings */
+.keys summary{cursor:pointer;font:500 14px Kanit,sans-serif;color:var(--rose-d)}
+.vrow{display:flex;align-items:center;gap:8px;margin:6px 0;font:500 14px Kanit,sans-serif;color:var(--ink)}
+.vrow select{flex:1;min-width:0;font-size:14px;padding:4px 6px}
+.vrow input{flex:1}

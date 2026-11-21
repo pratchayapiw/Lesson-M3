@@ -11,7 +11,7 @@ const IMG=n=>A+'icons/unit'+n+'.png';
 const GSTEPS=[['q','❓','Question'],['notice','👀','Notice'],['compare','⚖️','Compare'],['meaning','💡','Meaning'],['detect','🚨','Detective'],['rule','🧩','Rule'],['practice','✍️','Practice']];
 function expandGD(u){
   const G=(window.TEACH_GD||{})[u.n];
-  if(G){for(const k of ['gram','gram2']){if(!G[k])continue;const i=u.slides.findIndex(s=>s.sec===k);if(i<0)continue;
+  if(G){u.detect=null;for(const k of ['gram','gram2']){if(!G[k])continue;const i=u.slides.findIndex(s=>s.sec===k);if(i<0)continue;
     u.slides=u.slides.filter(s=>!(s.sec===k&&['rule','compare'].includes(s.type)));u.slides.splice(i,0,Object.assign({sec:k,type:'gd'},G[k]))}}
   const out=[];let cur=null;
   for(const s of u.slides){
@@ -32,13 +32,19 @@ function expandGD(u){
   }
   u.slides=out;
 }
-for(const n in U)expandGD(U[n]);
+function expandWB(u){const W=(window.TEACH_WB||{})[u.n];if(!W)return;
+  const add=[];W.wb.forEach((e,i)=>add.push({sec:'wb',type:e.type,min:5,title:e.title,sub:e.sub||'แบบฝึกหัดท้ายเล่ม (Grammar practice)',bank:e.bank,items:e.items,kick:'Workbook '+(i+1)+'/'+W.wb.length+' · แบบฝึกท้ายเล่ม',
+    notes:{goal:'ฝึกไวยากรณ์ของหน่วยแบบเดียวกับแบบฝึกหัดท้ายเล่ม',say:['Do exercise '+'ABCD'[i]+' in your notebook. You have three minutes.'],do:['ให้ทำในสมุดหรือใบงาน 3–4 นาที (กดจับเวลา)','สุ่มเลขที่ตอบทีละข้อ แล้วกด → เฉลย','ข้อที่ผิดเยอะ ให้ย้อนไปดูสไลด์ Rule ของเรื่องนั้น'],ans:e.items.map(t=>(t.match(/\[([^\]]+)\]|\{\{[^}]*?([^|{]+)\*[^}]*\}\}/g)||[]).map(x=>x.replace(/\[|\]/g,'').replace(/\{\{.*?([^|{]+)\*.*\}\}/,'$1')).join(', ')).join(' · ')},tools:['timer','picker']}));
+  add.push({sec:'quiz',type:'quiz',min:15,title:'Unit '+u.n+' Quiz',sub:'สอบย่อยท้ายหน่วย 10 ข้อ',kick:'สอบย่อยท้ายหน่วย',
+    notes:{goal:'ประเมินความเข้าใจท้ายหน่วย (คำศัพท์ ไวยากรณ์ และภาษาที่ใช้สื่อสาร)',say:['It’s quiz time! Ten questions. Good luck!'],do:['กด ▶ เริ่มสอบ เพื่อแสดงทีละข้อบนจอ ให้นักเรียนเขียนคำตอบ A–D ในกระดาษ','หรือกด 🖨️ พิมพ์ข้อสอบ เพื่อแจกเป็นกระดาษ (มีเฉลยหน้าสุดท้าย)','เฉลยทีละข้อพร้อมเหตุผล ให้นักเรียนตรวจของตัวเอง แล้วบันทึกคะแนน'],ans:W.quiz.map((q,i)=>(i+1)+' '+'ABCD'[q[2]]).join(' · ')},tools:['quiz','timer']});
+  const i=u.slides.findIndex(s=>s.sec==='review');u.slides.splice(i<0?u.slides.length:i,0,...add);u.quiz=W.quiz;}
+for(const n in U){expandGD(U[n]);expandWB(U[n])}
 const SEC={
   warm:['Warm-up','อุ่นเครื่อง','#e07a2e'], vocab:['Vocabulary','คำศัพท์','#d9493f'], read:['Reading','การอ่าน','#2f6fb3'],
   gram:['Grammar 1','ไวยากรณ์ 1','#2f8a4f'], listen:['Listening','การฟัง','#7b4bb5'], vocab2:['Vocabulary 2','คำศัพท์ 2','#c2410c'],
-  gram2:['Grammar 2','ไวยากรณ์ 2','#13867a'], speak:['Speaking','การพูด','#c94f7c'], write:['Writing','การเขียน','#a0662b'], review:['Review','ทบทวน','#4b5563']
+  gram2:['Grammar 2','ไวยากรณ์ 2','#13867a'], speak:['Speaking','การพูด','#c94f7c'], write:['Writing','การเขียน','#a0662b'], wb:['Workbook','แบบฝึกท้ายเล่ม','#8a5a2b'], quiz:['Unit Quiz','สอบย่อย','#b8274f'], review:['Review','ทบทวน','#4b5563']
 };
-const TOOLS={timer:'⏲️ จับเวลา',picker:'🎯 สุ่มเลขที่',score:'🏆 คะแนนกลุ่ม',flash:'🃏 แฟลชการ์ด',sort:'🔀 เกมแยกประเภท',detect:'🚨 จับผิดประโยค',puzzle:'🧩 สร้างสูตร',scramble:'🔤 เรียงประโยค',media:'📦 สื่อการสอน'};
+const TOOLS={quiz:'📝 สอบย่อย',timer:'⏲️ จับเวลา',picker:'🎯 สุ่มเลขที่',score:'🏆 คะแนนกลุ่ม',flash:'🃏 แฟลชการ์ด',sort:'🔀 เกมแยกประเภท',detect:'🚨 จับผิดประโยค',puzzle:'🧩 สร้างสูตร',scramble:'🔤 เรียงประโยค',media:'📦 สื่อการสอน'};
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -52,19 +58,26 @@ function md(s){
 const plain=s=>String(s).replace(/<[^>]+>/g,'').replace(/\*\*|\{|\}/g,'').replace(/\[([^\]]+)\]/g,'$1').replace(/_{2,}/g,'blank');
 
 /* ---- speech ---- */
+const BADV=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy|Grandma|Grandpa|Rocko|Shelley|\bFlo\b|Eddy|Reed|Sandy|Deranged|Hysterical|Pipe Organ/i;
+function rankVoices(vs){const sc=v=>(BADV.test(v.name)?-100:0)+(/Google US English|Samantha|Aria|Jenny|Zira|Natural|Enhanced|Premium|Ava|Allison|Susan/i.test(v.name)?6:0)+(/Microsoft.*Online|Google/i.test(v.name)?3:0)+(/en[-_]US/i.test(v.lang)?3:/en[-_]GB/i.test(v.lang)?2:0)+(v.localService?1:0);
+  return vs.filter(v=>/^en/i.test(v.lang)&&!BADV.test(v.name)).sort((a,b)=>sc(b)-sc(a))}
+function speakClean(t){return String(t).replace(/<[^>]+>/g,'').replace(/\*\*|\{|\}/g,'').replace(/\[([^\]|]+)[^\]]*\]/g,'$1').replace(/_{2,}/g,' blank ').replace(/\s\/\s/g,' or ').replace(/\s*\([^)]*\)/g,'').replace(/[’‘]/g,"'").replace(/ '(ve|s|ll|re|m|d|t)\b/g,"'$1").replace(/\s+/g,' ').trim()}
 let VOICES=[];
-function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang))}catch(e){}}
-try{loadVoices();speechSynthesis.onvoiceschanged=loadVoices}catch(e){}
+function loadVoices(){try{VOICES=rankVoices(speechSynthesis.getVoices());drawVoicePick()}catch(e){}}
+try{loadVoices();speechSynthesis.addEventListener?speechSynthesis.addEventListener('voiceschanged',loadVoices):(speechSynthesis.onvoiceschanged=loadVoices)}catch(e){}
+function pickVoice(k){const pref=LS.get('teach:voice','');const main=VOICES.find(v=>v.name===pref)||VOICES[0];
+  if(!k)return main;const others=VOICES.filter(v=>v!==main).slice(0,3);return others.length?others[(k-1)%others.length]:main}
+function drawVoicePick(){const s=document.getElementById('voicePick');if(!s)return;const cur=(pickVoice(0)||{}).name;
+  s.innerHTML=VOICES.length?VOICES.slice(0,12).map(v=>`<option ${v.name===cur?'selected':''}>${esc(v.name)}</option>`).join(''):'<option>เสียงเริ่มต้นของเครื่อง</option>'}
 function say(text,o={}){
   try{
-    const u=new SpeechSynthesisUtterance(plain(text));
-    u.lang='en-US';u.rate=o.rate||0.88;u.pitch=o.pitch||1;
-    const pref=VOICES.filter(v=>/en-US|en-GB/.test(v.lang));
-    const list=pref.length?pref:VOICES;
-    if(list.length)u.voice=list[(o.v||0)%list.length];
-    if(o.end)u.onend=o.end;
-    if(!o.queue)speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    if(!('speechSynthesis' in window)){o.end&&setTimeout(o.end,300);return}
+    const u=new SpeechSynthesisUtterance(speakClean(text));
+    u.lang='en-US';u.rate=o.rate||LS.get('teach:rate',0.85);u.pitch=o.pitch||1;
+    const v=pickVoice(o.v||0);if(v){u.voice=v;u.lang=v.lang}
+    if(o.end){u.onend=o.end;u.onerror=o.end}
+    const go=()=>{try{speechSynthesis.resume()}catch(e){}speechSynthesis.speak(u)};
+    if(!o.queue&&(speechSynthesis.speaking||speechSynthesis.pending)){speechSynthesis.cancel();setTimeout(go,80)}else go();
     return u;
   }catch(e){o.end&&setTimeout(o.end,600)}
 }
@@ -159,6 +172,12 @@ const R={
  gdet(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="gdl">
    ${sl.items.map((d,i)=>`<div class="gd an" style="--i:${2+i}"><span class="n">${i+1}</span><div class="w"><div class="bad">❌ ${d[0].replace(/<m>(.*?)<\/m>/g,'<mark class="mk">$1</mark>')}</div><div class="fix st">✅ ${md(d[1])} <small>${d[2]}</small></div></div></div>`).join('')}
    </div></div></div>`},
+ choose(sl){const ch=t=>md(t.replace(/\{\{(.*?)\}\}/g,(m,a)=>`<span class="chz">${a.split('|').map(o=>`<button class="o" data-ok="${o.endsWith('*')?1:0}">${o.replace(/\*$/,'')}</button>`).join('<i>/</i>')}</span>`));
+   return `<div class="sl">${head(sl)}<div class="body"><div class="glist">${sl.items.map((t,i)=>`<div class="gitem an" style="--i:${2+i}"><span class="no">${i+1}</span><span>${ch(t)}</span><button class="spk" data-say="${esc(t.replace(/\{\{.*?([^|{]+)\*.*?\}\}/g,'$1'))}">🔊</button></div>`).join('')}</div></div></div>`},
+ quiz(sl){const q=unit.quiz||[];return `<div class="sl">${head(sl)}<div class="body"><div class="qzcta">
+   <div class="qzart an" style="--i:2"><span>📝</span></div>
+   <div class="qzinfo an" style="--i:3"><b>${q.length} ข้อ · ปรนัย 4 ตัวเลือก</b><span>คำศัพท์ · ไวยากรณ์ · ภาษาเพื่อการสื่อสาร</span>
+   <div class="qzbtns"><button data-tool="quiz" class="go">▶ เริ่มสอบบนจอ</button><button data-print="1">🖨️ พิมพ์ข้อสอบ</button></div></div></div></div></div>`},
  read(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="rd">
    <div class="rtext an" style="--i:2"><div class="rh">${sl.h||''} <button class="spk" data-say="${esc(plain(sl.text.join(' ')))}">🔊</button></div>${sl.text.map(p=>`<p>${md(p)}</p>`).join('')}</div>
    <div class="rqs">${sl.qs.map((q,i)=>`<div class="rq st"><b>${i+1}.</b> ${md(q[0])}<span class="a">→ ${md(q[1])}</span></div>`).join('')}</div>
@@ -181,12 +200,12 @@ function render(){
   const sl=unit.slides[idx];
   const el=$('#slide');
   el.innerHTML=`<div class="sbg"><div class="dots"></div><div class="blob b1"></div><div class="blob b2"></div>${SAKURA}<img class="wm" src="${IMG(unit.n)}" alt=""></div>${fxHTML()}`+(R[sl.type]||R.gaps)(sl);
-  steps=[...el.querySelectorAll('.st,.gp,.fc,.mk')].filter(x=>!(sl.type==='cards'&&sl.noflip&&x.classList.contains('fc')));
+  steps=[...el.querySelectorAll('.st,.gp,.fc,.mk,.chz')].filter(x=>!(sl.type==='cards'&&sl.noflip&&x.classList.contains('fc')));
   si=0;updCounter();
   // phases + thumbs
   $$('.ph').forEach(b=>b.classList.toggle('on',b.dataset.k===sl.sec));
   $$('.tb').forEach(b=>b.classList.toggle('on',+b.dataset.i===idx));
-  const th=$(`.tb[data-i="${idx}"]`);th&&th.scrollIntoView({block:'nearest',inline:'center'});
+  const th=$(`.tb[data-i="${idx}"]`),tw=$('#thumbs');if(th&&tw){tw.scrollTo({left:th.offsetLeft-tw.clientWidth/2+th.offsetWidth/2,behavior:'smooth'})}
   renderNotes(sl);renderQuick(sl);
   try{history.replaceState(null,'',`#u${unit.n}/${idx+1}`)}catch(e){}
 }
@@ -197,6 +216,7 @@ function updCounter(){
 function revealEl(x){
   if(x.classList.contains('fc')){x.classList.add('fl');say(x.dataset.w);return}
   x.classList.add('on');
+  if(x.classList.contains('chz'))x.querySelectorAll('.o').forEach(o=>o.classList.add(o.dataset.ok==='1'?'ok':'no'));
   if(x.classList.contains('gp')){const sp=document.createElement('span');sp.className='spark';sp.textContent='✨';x.appendChild(sp);setTimeout(()=>sp.remove(),1100)}
   if(x.dataset.mark!=null){const o=$$('#slide .opt')[+x.dataset.mark];o&&o.classList.add('ok');confetti(40)}
   if(x.classList.contains('st'))x.classList.add('hl');
@@ -212,6 +232,7 @@ function go(i,force){
   render();fit();
 }
 
+document.addEventListener('change',e=>{if(e.target.id==='voicePick'){LS.set('teach:voice',e.target.value);say('Hello! This is my voice.')}if(e.target.id==='ratePick'){LS.set('teach:rate',+e.target.value)}});
 /* notes */
 function renderNotes(sl){
   const n=sl.notes||{};const d=SEC[sl.sec];
@@ -222,11 +243,15 @@ function renderNotes(sl){
    ${n.say?`<div class="nsec">🗣️ ครูพูด (Teacher talk)</div>${n.say.map(s=>`<div class="say"><span>${s}</span><button data-say="${esc(plain(s))}">🔊</button></div>`).join('')}`:''}
    ${n.do?`<div class="nsec">👣 ขั้นตอน</div><ul>${n.do.map(s=>`<li>${s}</li>`).join('')}</ul>`:''}
    ${n.ans?`<div class="nsec">🔑 เฉลย (แตะเพื่อดู)</div><div class="ans" id="ansBox">${n.ans}</div><p class="anshint">ซ่อนไว้ไม่ให้นักเรียนเห็นบนจอ</p>`:''}
-   ${(sl.tools||[]).length?`<div class="nsec">🧰 เครื่องมือของสไลด์นี้</div>${sl.tools.map(t=>`<button class="toolbtn" data-tool="${t}">${TOOLS[t]}</button>`).join('')}`:''}
-   <div class="keys"><kbd>→</kbd>/<kbd>Space</kbd> เฉลยทีละขั้น แล้วไปสไลด์ถัดไป · <kbd>←</kbd> ย้อน · <kbd>A</kbd> เฉลยทั้งหมด · <kbd>H</kbd> ซ่อนเฉลย · <kbd>T</kbd> จับเวลา · <kbd>R</kbd> สุ่มเลขที่ · <kbd>F</kbd> เต็มจอ · <kbd>N</kbd> บทสอน</div>`;
+   ${(sl.tools||[]).filter(t=>availTools().includes(t)).length?`<div class="nsec">🧰 เครื่องมือของสไลด์นี้</div>${sl.tools.filter(t=>availTools().includes(t)).map(t=>`<button class="toolbtn" data-tool="${t}">${TOOLS[t]}</button>`).join('')}`:''}
+   <details class="keys"><summary>⚙️ เสียงอ่าน & ปุ่มลัด</summary>
+   <label class="vrow">🔊 เสียง <select id="voicePick"></select></label>
+   <label class="vrow">🐢 ความเร็ว <input type="range" id="ratePick" min="0.6" max="1.1" step="0.05" value="${LS.get('teach:rate',0.85)}"><button class="spk" data-say="Hello! Listen and repeat: do a bungee jump.">▶</button></label>
+   <kbd>→</kbd>/<kbd>Space</kbd> เฉลยทีละขั้น แล้วไปสไลด์ถัดไป · <kbd>←</kbd> ย้อน · <kbd>A</kbd> เฉลยทั้งหมด · <kbd>H</kbd> ซ่อนเฉลย · <kbd>T</kbd> จับเวลา · <kbd>R</kbd> สุ่มเลขที่ · <kbd>F</kbd> เต็มจอ · <kbd>N</kbd> บทสอน</details>`;
+  drawVoicePick();
 }
 function renderQuick(sl){
-  $('#quick').innerHTML=(steps.length?`<button class="rv" id="qReveal">✨ เฉลย (→)</button>`:'')+(sl.tools||[]).slice(0,3).map(t=>`<button data-tool="${t}">${TOOLS[t]}</button>`).join('');
+  $('#quick').innerHTML=(steps.length?`<button class="rv" id="qReveal">✨ เฉลย (→)</button>`:'')+(notesOn&&!document.fullscreenElement?'':(sl.tools||[]).filter(t=>availTools().includes(t)).slice(0,3).map(t=>`<button data-tool="${t}">${TOOLS[t]}</button>`).join(''));
   updCounter();
 }
 
@@ -253,6 +278,8 @@ document.addEventListener('click',e=>{
     op.classList.add(ok?'ok':'no');if(ok){confetti(60);const w=$('#slide .why');if(w&&!w.classList.contains('on')){const k=steps.indexOf(w);if(k>=si){while(si<=k){revealEl(steps[si]);si++}updCounter()}}}
     return}
   const cd=t.closest('#slide .card');if(cd){cd.classList.toggle('fl');say(cd.dataset.w);cd.classList.add('say');setTimeout(()=>cd.classList.remove('say'),900);const k=steps.indexOf(cd);if(k===si){si++;updCounter()}return}
+  const co=t.closest('#slide .chz .o');if(co){e.stopPropagation();const z=co.parentNode;co.classList.add(co.dataset.ok==='1'?'ok':'no');if(co.dataset.ok==='1'){z.classList.add('on');z.querySelectorAll('.o').forEach(o=>o.classList.add(o.dataset.ok==='1'?'ok':'no'));confetti(25);const k=steps.indexOf(z);if(k===si){si++;updCounter()}}return}
+  if(t.closest('[data-print]')){printQuiz();return}
   const gp=t.closest('#slide .gp');if(gp){if(!gp.classList.contains('on')){revealEl(gp);const k=steps.indexOf(gp);if(k===si){si++;updCounter()}}return}
   const ln=t.closest('#slide .ln.on');if(ln){const s=ln.querySelector('.spk');s&&say(s.dataset.say,{v:+ln.dataset.v});return}
   if(t.closest('#slide')){next();return}
@@ -267,12 +294,12 @@ $('#stage').addEventListener('touchend',e=>{if(tx==null)return;const t=e.changed
 if(matchMedia('(orientation:landscape) and (max-height:520px)').matches){notesOn=false;$('#main').classList.add('nonotes');$('#notesBtn').classList.remove('on')}
 $('#next').onclick=()=>next();
 $('#homeBtn').onclick=()=>{location.hash=''};
-$('#notesBtn').onclick=()=>{notesOn=!notesOn;$('#main').classList.toggle('nonotes',!notesOn);$('#notesBtn').classList.toggle('on',notesOn);setTimeout(fit,30)};
+$('#notesBtn').onclick=()=>{notesOn=!notesOn;$('#main').classList.toggle('nonotes',!notesOn);$('#notesBtn').classList.toggle('on',notesOn);unit&&renderQuick(unit.slides[idx]);setTimeout(fit,30)};
 $('#toolsBtn').onclick=()=>openTool(curTool||'timer');
 $('#animBtn').onclick=()=>{document.body.classList.toggle('noanim');$('#animBtn').classList.toggle('on',!document.body.classList.contains('noanim'))};
 $('#fsBtn').onclick=toggleFS;
 function toggleFS(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}catch(e){}setTimeout(fit,200)}
-document.addEventListener('fullscreenchange',()=>setTimeout(fit,100));
+document.addEventListener('fullscreenchange',()=>{unit&&renderQuick(unit.slides[idx]);setTimeout(fit,100)});
 document.addEventListener('keydown',e=>{
   if(!unit||app.classList.contains('hidden'))return;
   if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
@@ -312,14 +339,15 @@ function drawLt(){const t=$('#lt');t.textContent=String(Math.floor(lt/60)).padSt
 
 /* ================= TOOLS ================= */
 let curTool=null;
-function availTools(){return Object.keys(TOOLS).filter(k=>['timer','picker','score'].includes(k)||unit[k])}
+function availTools(){return Object.keys(TOOLS).filter(k=>['timer','picker','score'].includes(k)||(k==='quiz'?(unit.quiz||[]).length:unit[k]))}
 function buildTools(){
   const av=availTools();unit.toolsCount=av.length;
   $('#tabs').innerHTML=av.map(k=>`<button class="tab" data-tab="${k}">${TOOLS[k]}</button>`).join('');
   $('#tabs').onclick=e=>{const b=e.target.closest('.tab');if(b)openTool(b.dataset.tab)};
-  initFlash();initSort();initDetect();initPuzzle();initScramble();initMedia();drawTeams();
+  initQuiz();initFlash();initSort();initDetect();initPuzzle();initScramble();initMedia();drawTeams();
 }
 function openTool(k){
+  if(k==='quiz'&&curTool!=='quiz')initQuiz();
   if(!availTools().includes(k))k='timer';
   curTool=k;$('#ov').classList.add('show');
   $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));
@@ -418,6 +446,32 @@ $('#scrIn').onclick=e=>{const b=e.target.closest('.wtile');if(!b)return;b.classL
 $('#scrOut').onclick=e=>{const b=e.target.closest('.wtile');if(!b||$('#scrOut').classList.contains('ok'))return;const t=$(`#scrIn .wtile[data-i="${b.dataset.i}"]`);t&&t.classList.remove('used');built.splice([...$('#scrOut').children].indexOf(b),1);b.remove();$('#scrOut').className='scr-out'};
 $('#scrReset').onclick=drawScr;$('#scrNext').onclick=()=>{sci=(sci+1)%sc.length;drawScr()};$('#scrAns').onclick=()=>{$('#scrFb').innerHTML='🔑 '+sc[sci];say(sc[sci])};
 
+/* unit quiz */
+let qz=0,qzScore=0,qzDone=[];
+function initQuiz(){qz=0;qzScore=0;qzDone=[];drawQuiz()}
+function drawQuiz(){const Q=unit.quiz||[];const b=$('#qzBody');if(!b)return;
+  if(qz>=Q.length){b.innerHTML=`<div class="qzend"><div class="big">🏁</div><h3>จบแบบทดสอบ</h3><p>ทั้งห้องตอบถูก <b>${qzScore}</b> / ${Q.length} ข้อ</p><button class="btn big" id="qzAgain">↺ เริ่มใหม่</button></div>`;confetti(120);return}
+  const q=Q[qz];b.innerHTML=`<div class="row"><span class="qzn">ข้อ ${qz+1} / ${Q.length}</span><span style="flex:1"></span><span class="qzn">✔ ${qzScore}</span></div>
+   <div class="qzq">${md(q[0])} <button class="spk" data-say="${esc(q[0])}">🔊</button></div>
+   <div class="qzo">${q[1].map((o,i)=>`<button data-qa="${i}" class="c${i}"><i>${'ABCD'[i]}</i>${md(o)}</button>`).join('')}</div>
+   <div class="fb" id="qzFb"></div>
+   <div class="row" style="justify-content:center"><button class="btn alt" id="qzShow">🔑 เฉลย</button><button class="btn" id="qzNext">ข้อต่อไป →</button></div>`}
+document.addEventListener('click',e=>{const t=e.target;if(!unit)return;
+  const a=t.closest('[data-qa]');if(a){const q=unit.quiz[qz];const ok=+a.dataset.qa===q[2];if(qzDone[qz]==null){qzDone[qz]=ok;if(ok)qzScore++}
+    $$('#qzBody [data-qa]').forEach(b=>b.classList.toggle('ok',+b.dataset.qa===q[2]));if(!ok)a.classList.add('no');
+    $('#qzFb').innerHTML=`<b class="${ok?'ok':'no'}">${ok?'✅ ถูกต้อง!':'❌ ยังไม่ใช่'}</b> คำตอบ <b>${'ABCD'[q[2]]}</b> — ${q[3]||''}`;if(ok)confetti(50);return}
+  if(t.id==='qzShow'){const q=unit.quiz[qz];$$('#qzBody [data-qa]').forEach(b=>b.classList.toggle('ok',+b.dataset.qa===q[2]));$('#qzFb').innerHTML=`คำตอบ <b>${'ABCD'[q[2]]}</b> — ${q[3]||''}`;return}
+  if(t.id==='qzNext'){qz++;drawQuiz();return}
+  if(t.id==='qzAgain'){initQuiz();return}
+  if(t.id==='qzPrint'){printQuiz();return}
+});
+function printQuiz(){const Q=unit.quiz||[];const w=window.open('','_blank');if(!w){alert('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาต pop-up');return}
+  const st=s=>String(s).replace(/\*\*/g,'');
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>Unit ${unit.n} Quiz</title><style>body{font-family:Sarabun,Tahoma,sans-serif;max-width:760px;margin:30px auto;padding:0 20px;font-size:17px;line-height:1.5}h1{font-size:24px;margin:0}.hd{display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:14px}ol>li{margin:0 0 12px}.op{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;margin-top:4px}.key{page-break-before:always}</style>
+  <div class="hd"><div><h1>Unit ${unit.n} ${unit.title} – Quiz</h1>Get Involved! M3 · อ23102</div><div>ชื่อ ..............................<br>ชั้น ......... เลขที่ ......... คะแนน ...... / ${Q.length}</div></div>
+  <ol>${Q.map(q=>`<li>${st(q[0])}<div class="op">${q[1].map((o,i)=>`<span>${'abcd'[i]}) ${st(o)}</span>`).join('')}</div></li>`).join('')}</ol>
+  <div class="key"><h1>เฉลย Unit ${unit.n}</h1><ol>${Q.map(q=>`<li><b>${'abcd'[q[2]]}</b> ${st(q[1][q[2]])} — ${q[3]||''}</li>`).join('')}</ol></div><script>setTimeout(()=>print(),400)<\/script>`);w.document.close()}
+
 /* media */
 function initMedia(){const m=unit.media;if(!m)return;const key='teach:media:u'+unit.n;const done=LS.get(key,{});
   const row=(x,k)=>`<label class="mi ${done[k]?'done':''}"><input type="checkbox" data-k="${k}" ${done[k]?'checked':''}><div><div class="mt">${x[0]}</div><div class="md">${x[1]}</div>${x[2]?`<a class="open" href="${x[2]}" target="_blank" rel="noopener">เปิด ↗</a>`:''}</div></label>`;
@@ -435,7 +489,9 @@ function loop(){cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.x+=p.vx
   parts=parts.filter(p=>p.l>0&&p.y<innerHeight+20);craf=parts.length?requestAnimationFrame(loop):null;if(!craf)cx.clearRect(0,0,cv.width,cv.height)}
 
 /* ================= ROUTER ================= */
-function route(){const m=location.hash.match(/^#u(\d+)(?:\/(\d+))?/);
+function route(){const sm=location.hash.match(/^#u(\d+)\/([a-z]+\d?)$/);
+  if(sm&&U[sm[1]]){const i=U[sm[1]].slides.findIndex(s=>s.sec===sm[2]);location.replace('#u'+sm[1]+'/'+(Math.max(0,i)+1));return}
+  const m=location.hash.match(/^#u(\d+)(?:\/(\d+))?/);
   if(m){const n=+m[1];if(!unit||unit.n!==n)openUnit(n,(+m[2]||1)-1);else if(m[2]&&+m[2]-1!==idx)go(+m[2]-1)}else{unit=null;showPicker()}}
 addEventListener('hashchange',route);
 if(window.TEACH_HOME){const a=$('#pkHome');if(a){a.href=window.TEACH_HOME;a.classList.remove('hidden')}}

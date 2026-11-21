@@ -211,3 +211,5 @@ body.themed .card,body.themed .st{background-color:rgba(255,255,255,.96)}
 .shx #tocLink{display:none}
 .shx .wrap{max-width:1100px}
 @media (max-width:860px){.shx .top{margin:10px 10px 0;top:6px}}
+
+@media (min-width:861px){.shx .top a[href='#slides'],.shx .top a[href='#teacher']{display:none}}
