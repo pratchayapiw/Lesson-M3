@@ -180,8 +180,8 @@ const ICONS = { home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 
 const svg = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
 function nav(v) {
   const items = role === "teacher"
-    ? [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "บทเรียน / สไลด์สอน"], [OPEN.dir + "#teacher-results", "prog", "ผลนักเรียน"], [OPEN.dir + "#map", "test", "ดูบทเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
-    : [["#home", "home", "Home"], ["#contents", "units", "Learning Units"], ["teach/", "slides", "บทเรียนทุกหน่วย"], [OPEN.dir + "#map", "test", "Practice & Tests"], [OPEN.dir + "#summary", "prog", "My Progress"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]];
+    ? [["#home", "home", "Home"], ["teach/", "slides", "บทเรียน / สไลด์สอน"], ["scores.html", "prog", "สรุปคะแนนนักเรียน"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]]
+    : [["#home", "home", "Home"], ["teach/", "slides", "บทเรียนทุกหน่วย"], ["teach/#progress", "prog", "My Progress"], ["hr"], ["#login", "user", "ผู้ใช้งาน"]];
   $("#nav").innerHTML = items.map(x => x[0] === "hr" ? "<hr>" : `<a href="${x[0]}" class="${x[0] === "#" + v ? "on" : ""}">${svg(x[1])}${x[2]}</a>`).join("");
   const name = role === "teacher" ? "Kru Pratchaya" : me ? me.name : "เลือกผู้ใช้งาน";
   $("#hello").innerHTML = `<span class="bell">🔔</span><span><small>Welcome!</small><b>${esc(name)}</b></span><span class="avatar">${role === "teacher" ? "KP" : me ? esc(me.name.trim().slice(0, 2)) : "?"}</span>`;
@@ -199,40 +199,44 @@ function scene() {
     <g fill="#f6a9bd"><circle cx="150" cy="40" r="9"/><circle cx="170" cy="26" r="6"/><circle cx="590" cy="30" r="10"/><circle cx="560" cy="16" r="7"/><circle cx="290" cy="24" r="6"/><circle cx="130" cy="230" r="8"/><circle cx="110" cy="245" r="5"/></g>
     <g fill="#fff"><circle cx="150" cy="40" r="3"/><circle cx="590" cy="30" r="3"/></g></svg>`;
 }
+function RES(n) { return LS.get("teach:res:u" + n, null); }
 function viewHome() {
-  const u = OPEN, p = P(u), steps = p.steps || {}, q = p.quiz || {};
-  const goalsDone = (u.goals || []).map(([sk, st]) => !!(steps[sk] && steps[sk][st]) || (st === "quiz" && q[sk] && q[sk].first));
-  const pct = Math.round(goalsDone.filter(Boolean).length / goalsDone.length * 100);
-  const per = SKILLS.map(([k, name, , , col]) => [name, col, q[k] && q[k].first ? Math.round(q[k].first.s / q[k].first.m * 100) : 0]);
-  const overall = Math.round(per.reduce((a, b) => a + b[2], 0) / per.length);
-  const C = 2 * Math.PI * 54;
+  const all = UNITS.map(x => ({ x, r: RES(x.n) }));
+  const passed = all.filter(o => o.r && o.r.quiz && o.r.quiz.passed).length;
+  const cur = (all.find(o => o.x.term === 2 && !(o.r && o.r.quiz && o.r.quiz.passed)) || all.find(o => o.x.n === 6)).x;
+  const rc = RES(cur.n) || {};
+  const C = 2 * Math.PI * 54, pctAll = Math.round(passed / UNITS.length * 100);
+  const goals = [["vocab", "🔤", "เรียนคำศัพท์ (ฟัง–พูดตาม)", false], ["gram", "🧩", "ไวยากรณ์ 1: ถามนำ → ค้นพบกฎ", false], ["gram2", "🧩", "ไวยากรณ์ 2", false],
+    ["quiz", "📒", "ทำแบบฝึก (คำศัพท์ + ไวยากรณ์)", !!rc.practice], ["quiz", "📝", "สอบย่อยให้ผ่าน 60%", !!(rc.quiz && rc.quiz.passed)]];
   const left = role === "teacher"
-    ? `<div class="card"><h3>📽️ สไลด์สอน Unit 6</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit6.svg)"><img src="assets/icons/unit6.png" alt=""></div>
-        <div style="flex:1;min-width:0"><b>Unit 6: Experience</b><small>Teaching Hub 8 หน่วย · บทสอน · เครื่องมือในห้อง</small></div><a class="go" href="teach/#u6" aria-label="เปิดสไลด์สอน">▶</a></div></div>`
-    : `<div class="card"><h3>📖 Continue Learning</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit6.svg)"><img src="assets/icons/unit6.png" alt=""></div>
-        <div style="flex:1;min-width:0"><b>Unit 6: Experience</b><small>Present perfect · ever / never</small><div class="bar"><i style="width:${me ? pct : 0}%"></i></div><small style="color:var(--muted)">${me ? pct + "% ของเป้าหมาย" : "เลือกผู้ใช้งานก่อนเริ่ม"}</small></div>
-        <a class="go" href="${me ? u.dir + "#map" : "#login"}" aria-label="เรียนต่อ">▶</a></div></div>`;
+    ? `<div class="card"><h3>📽️ บทเรียน / สไลด์สอน</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit6.svg)"><img src="assets/icons/unit6.png" alt=""></div>
+        <div style="flex:1;min-width:0"><b>Teaching Hub · 8 หน่วย</b><small>คำศัพท์ · ไวยากรณ์ · แบบฝึก · สอบย่อย</small></div><a class="go" href="teach/" aria-label="เปิดบทเรียน">▶</a></div></div>`
+    : `<div class="card"><h3>📖 Continue Learning</h3><div class="cont"><div class="thumb" style="--bg:url(assets/bg/unit${cur.n}.svg)"><img src="assets/icons/unit${cur.n}.png" alt=""></div>
+        <div style="flex:1;min-width:0"><b>Unit ${cur.n}: ${cur.t}</b><small>${esc(cur.th)}</small><div class="bar"><i style="width:${Math.round(goals.filter(g => g[3]).length / goals.length * 100)}%"></i></div><small style="color:var(--muted)">${me ? (rc.quiz && rc.quiz.passed ? "สอบย่อยผ่านแล้ว ✅" : "ยังไม่ได้สอบผ่าน") : "เลือกผู้ใช้งานก่อนเริ่ม"}</small></div>
+        <a class="go" href="${me ? "teach/#u" + cur.n : "#login"}" aria-label="เรียนต่อ">▶</a></div></div>`;
   const mid = role === "teacher"
-    ? `<div class="card"><h3>🎯 สอนวันนี้ · Unit ${u.n}</h3><ul class="goals">${[["vocab","🔤","คำศัพท์"],["gram","🧩","ไวยากรณ์ 1 (ถามนำ → ค้นพบกฎ)"],["gram2","🧩","ไวยากรณ์ 2"],["wb","📒","แบบฝึกหัดท้ายเล่ม"],["quiz","📝","สอบย่อยท้ายหน่วย"]].map(([s, ic, t]) => `<li><span class="ck">${ic}</span><a href="teach/#u${u.n}/${s}">${t}</a></li>`).join("")}</ul></div>`
-    : `<div class="card"><h3>🎯 Today's Goals</h3><ul class="goals">${(u.goals || []).map(([sk, st, t, h], n) => `<li class="${goalsDone[n] ? "y" : ""}"><span class="ck">${goalsDone[n] ? "✓" : ""}</span><a href="${u.dir}#${h}">${t}</a></li>`).join("")}</ul></div>`;
+    ? `<div class="card"><h3>🎯 สอนวันนี้ · Unit 6</h3><ul class="goals">${[["vocab","🔤","คำศัพท์"],["gram","🧩","ไวยากรณ์ 1 (ถามนำ → ค้นพบกฎ)"],["gram2","🧩","ไวยากรณ์ 2"],["wb","📒","แบบฝึก"],["quiz","📝","แบบทดสอบย่อย"]].map(([s, ic, t]) => `<li><span class="ck">${ic}</span><a href="teach/#u6/${s}">${t}</a></li>`).join("")}</ul></div>`
+    : `<div class="card"><h3>🎯 Today's Goals · Unit ${cur.n}</h3><ul class="goals">${goals.map(([s, ic, t, ok]) => `<li class="${ok ? "y" : ""}"><span class="ck">${ok ? "✓" : ic}</span><a href="${me ? "teach/#u" + cur.n + "/" + s : "#login"}">${t}</a></li>`).join("")}</ul></div>`;
   const right = role === "teacher"
-    ? `<div class="card"><h3>📊 คะแนนเก็บ Unit 6</h3><ul class="legend">${SKILLS.map(([k, n, , , c]) => `<li><i style="background:${c}"></i>${n}<span>${u.points[k]}</span></li>`).join("")}<li><i style="background:var(--rose)"></i><b>รวม</b><span>10</span></li></ul><p class="muted" style="font-size:13px;margin:8px 0 0">+ ชิ้นงาน 10 · กลางภาค 20 · ปลายภาค 20 · จิตพิสัย 10 · มาเรียน 10</p></div>`
+    ? `<div class="card"><h3>📊 สรุปคะแนนนักเรียน</h3><p style="margin:4px 0 10px">คะแนนแบบฝึก และแบบทดสอบย่อย (ผ่าน 60%) ของทุกหน่วย แยกห้อง เรียงเลขที่</p><a class="btn p" href="scores.html">เปิดสรุปคะแนน →</a></div>`
     : `<div class="card"><h3>📊 My Progress</h3><div class="prog"><svg class="ring" viewBox="0 0 132 132"><circle cx="66" cy="66" r="54" fill="none" stroke="#f8dbe3" stroke-width="14"/>
-        <circle cx="66" cy="66" r="54" fill="none" stroke="#e8507a" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - overall / 100)}" transform="rotate(-90 66 66)"/>
-        <text x="66" y="70" text-anchor="middle" font-family="Kanit" font-size="30" font-weight="600" fill="#3a2330">${overall}%</text><text x="66" y="92" text-anchor="middle" font-size="13" fill="#7c6470">Overall</text></svg>
-        <ul class="legend">${per.map(([n, c, v]) => `<li><i style="background:${c}"></i>${n}<span>${v}%</span></li>`).join("")}</ul></div></div>`;
+        <circle cx="66" cy="66" r="54" fill="none" stroke="#e8507a" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pctAll / 100)}" transform="rotate(-90 66 66)"/>
+        <text x="66" y="70" text-anchor="middle" font-family="Kanit" font-size="30" font-weight="600" fill="#3a2330">${passed}/8</text><text x="66" y="92" text-anchor="middle" font-size="13" fill="#7c6470">หน่วยที่ผ่าน</text></svg>
+        <ul class="legend">${all.map(({ x, r }) => `<li><i style="background:${x.pc}"></i>Unit ${x.n}<span>${r && r.quiz ? Math.round(r.quiz.best.s / r.quiz.best.m * 100) + "%" + (r.quiz.passed ? " ✅" : "") : "–"}</span></li>`).join("")}</ul></div></div>`;
+  const go = s => role ? "teach/#u" + cur.n + (s ? "/" + s : "") : "#login";
   $("#v-home").innerHTML = `<div class="banner">${scene()}<div class="txt"><h1>M.3 English <span>Learning Platform</span></h1>
-      <div class="tagline"><b>English for Real Life</b><small>Learn · Practice · Play · Communicate</small></div></div></div>
-    <div class="sec"><h2>📚 Learning Units</h2><a href="#contents">ดูสารบัญทั้งเล่ม →</a></div>
-    <div class="tiles">${UNITS.map(x => { const tch = role === "teacher", ok = true;
-        const href = role ? "teach/#u" + x.n : "#login";
-        const tag = tch ? '<span class="open">สไลด์สอน</span>' : '<span class="open">เปิดเรียน</span>';
-        const inner = `${tag}<img src="assets/icons/unit${x.n}.png" alt=""><span class="pn">Unit ${x.n}</span><b>${x.t}</b>`;
-        return ok ? `<a class="tile" href="${href}" style="--bg:${x.bg};--pc:${x.pc}">${inner}</a>` : `<div class="tile off" aria-disabled="true" title="บทเรียนนี้กำลังจัดทำ" style="--bg:${x.bg};--pc:${x.pc}">${inner}</div>`; }).join("")}</div>
+      <div class="tagline"><b>English for Real Life</b><small>Vocabulary · Grammar · Practice · Quiz</small></div></div></div>
+    <div class="sec"><h2>📚 บทเรียนทุกหน่วย</h2><a href="${role ? "teach/" : "#login"}">ดูทั้งหมด →</a></div>
+    <div class="tiles">${UNITS.map(x => { const tch = role === "teacher", r = RES(x.n);
+        const tag = tch ? '<span class="open">สไลด์สอน</span>' : r && r.quiz && r.quiz.passed ? '<span class="open">ผ่านแล้ว ✓</span>' : '<span class="open">เปิดเรียน</span>';
+        return `<a class="tile" href="${role ? "teach/#u" + x.n : "#login"}" style="--bg:${x.bg};--pc:${x.pc}">${tag}<img src="assets/icons/unit${x.n}.png" alt=""><span class="pn">Unit ${x.n}</span><b>${x.t}</b></a>`; }).join("")}</div>
     <div class="dash">${left}${mid}${right}</div>
-    <div class="skills-row">${SKILLS.map(([k, n, d, ic]) => `<a class="skill" href="${me || role === "teacher" ? u.dir + "#" + k : "#login"}"><img src="assets/icons/${ic}.png" alt=""><b>${n}</b><small>${d}</small></a>`).join("")}
-      <a class="skill" href="${me || role === "teacher" ? u.dir + "#slides" : "#login"}"><img src="assets/icons/gamepad.png" alt=""><b>Slides</b><small>Review & Fun</small></a>
-      <a class="skill" href="${me || role === "teacher" ? u.dir + "#posttest" : "#login"}"><img src="assets/icons/trophy.png" alt=""><b>Unit Test</b><small>Check Your Level</small></a></div>`;
+    <div class="skills-row">
+      <a class="skill" href="${go("vocab")}"><img src="assets/icons/az.png" alt=""><b>Vocabulary</b><small>ฟัง พูดตาม จำความหมาย</small></a>
+      <a class="skill" href="${go("gram")}"><img src="assets/icons/books.png" alt=""><b>Grammar</b><small>ค้นพบกฎทีละขั้น</small></a>
+      <a class="skill" href="${go("quiz")}"><img src="assets/icons/notepad.png" alt=""><b>แบบฝึก</b><small>คำศัพท์ + ไวยากรณ์</small></a>
+      <a class="skill" href="${go("quiz")}"><img src="assets/icons/trophy.png" alt=""><b>แบบทดสอบย่อย</b><small>ผ่าน 60%</small></a>
+      <a class="skill" href="${role === "teacher" ? "scores.html" : role ? "teach/#progress" : "#login"}"><img src="assets/icons/clipboard.png" alt=""><b>${role === "teacher" ? "สรุปคะแนน" : "My Progress"}</b><small>${role === "teacher" ? "แยกห้อง เรียงเลขที่" : "คะแนนทุกหน่วย"}</small></a></div>`;
 }
 function viewLogin() {
   $("#v-login").innerHTML = `<div class="banner" style="min-height:190px">${scene()}<div class="txt"><h1 style="font-size:46px">เลือกผู้ใช้งาน</h1>
@@ -287,7 +291,8 @@ function viewContents() {
 }
 function route() {
   const h = (location.hash || "").slice(1);
-  let v = h === "login" || h === "contents" || h === "home" ? h : (role ? "home" : "login");
+  if (h === "contents") { location.replace(role ? "teach/" : "#login"); return; }
+  let v = h === "login" || h === "home" ? h : (role ? "home" : "login");
   if (v === "home") viewHome(); else if (v === "login") viewLogin(); else viewContents();
   nav(v);
   document.querySelectorAll(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));

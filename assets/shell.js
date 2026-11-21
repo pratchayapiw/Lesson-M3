@@ -14,14 +14,14 @@
   const items=EMBED
     ?[['teach','#','slides','สไลด์สอน 8 หน่วย'],['hr'],['site',R,'home','เปิดเว็บไซต์เต็ม ↗']]
     :teacher
-    ?[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','บทเรียน / สไลด์สอน'],['results',R+'unit6/#teacher-results','prog','ผลนักเรียน'],['map',R+'unit6/#map','test','ดูบทเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
-    :[['home',R+'index.html#home','home','Home'],['units',R+'index.html#contents','units','Learning Units'],['teach',R+'teach/','slides','บทเรียนทุกหน่วย'],['map',R+'unit6/#map','test','Practice & Tests'],['summary',R+'unit6/#summary','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
+    ?[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียน / สไลด์สอน'],['scores',R+'scores.html','prog','สรุปคะแนนนักเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
+    :[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียนทุกหน่วย'],['progress',R+'teach/#progress','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
   if(EMBED)teacher=true;
   const name=teacher?'Kru Pratchaya':me?me.name:'เลือกผู้ใช้งาน';
   const av=teacher?'KP':me?String(me.name).trim().slice(0,2):'?';
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   function active(){const h=(location.hash||'').replace('#','').split('/')[0];
-    if(ACT)return ACT; if(h==='teacher-results')return 'results'; if(h==='teacher')return teacher?'teach':'';
+    if(/#progress/.test(location.hash))return 'progress';if(ACT)return ACT; if(h==='teacher-results')return 'results'; if(h==='teacher')return teacher?'teach':'';
     if(['slides','summary'].includes(h))return h; return 'map';}
   function build(){
     const host=W?document.querySelector(W):document.body; if(!host)return;
