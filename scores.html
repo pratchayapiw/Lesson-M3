@@ -43,12 +43,12 @@ td.c{text-align:center}th.c{text-align:center}
 </head>
 <body>
 <div class="wrap">
-  <div class="banner"><h1>📊 สรุปคะแนนนักเรียน</h1><p>แบบทดสอบย่อย (คะแนนจริง ผ่าน 60%) และแบบฝึก (แสดงผล ไม่นำไปคิด) · แยกห้อง · เรียงเลขที่จากน้อยไปมาก</p></div>
+  <div class="banner"><h1>📊 สรุปคะแนนนักเรียน</h1><p>คะแนนรวมต่อหน่วย (เต็ม 100) = แบบทดสอบย่อย 80% + แบบฝึก 20% · ผ่าน 60 · แยกห้อง · เรียงเลขที่จากน้อยไปมาก</p></div>
   <div id="gate"></div>
   <div id="ctl" hidden>
     <div class="bar">
       <label>หน่วย <select id="unitSel"><option value="all">ภาพรวม 8 หน่วย</option></select></label>
-      <label>คะแนนแบบทดสอบที่ใช้ <select id="scoreSel"><option value="best">สูงสุด</option><option value="first">ครั้งแรก</option></select></label>
+      <label>คะแนนที่ใช้ <select id="scoreSel"><option value="best">สูงสุด</option><option value="first">ครั้งแรก</option></select></label>
       <span style="flex:1"></span>
       <button class="btn alt" id="reload">↻ โหลดใหม่</button>
       <button class="btn" id="csv">⬇️ CSV (ห้องที่เลือก)</button>
@@ -82,8 +82,8 @@ async function load(){const pin=SS.get('m3:tp');if(!pin){gate();return}
       const k=(x.class||'').trim()+'|'+(x.student_no||'').trim()+'|'+(x.student_name||'').trim();
       const s=st[k]=st[k]||{cls:(x.class||'').trim(),no:(x.student_no||'').trim(),name:(x.student_name||'').trim(),u:{}};
       const d=x.detail||{},u=s.u[n]=s.u[n]||{n:0,first:null,best:null,passed:false,practice:null,code:'',last:''};
-      u.n++;const sc={s:+x.score,m:+x.max_score};if(!u.first)u.first=sc;if(!u.best||sc.s>u.best.s)u.best=sc;
-      u.passed=u.passed||(d.passed!=null?!!d.passed:sc.s/sc.m>=.6);if(!u.practice&&d.practice)u.practice=d.practice;u.code=d.code||u.code;u.last=x.created_at})});
+      u.n++;const tot=d.total!=null?{s:+d.total,m:100}:{s:Math.round(+x.score/(+x.max_score||1)*100),m:100};const sc=tot;if(d.quiz)u.quizRaw=d.quiz;if(!u.first)u.first=sc;if(!u.best||sc.s>u.best.s)u.best=sc;
+      u.passed=u.passed||(d.passed!=null?!!d.passed:sc.s>=60);if(!u.practice&&d.practice)u.practice=d.practice;u.code=d.code||u.code;u.last=x.created_at})});
     DATA=Object.values(st);$('#ctl').hidden=false;
     const classes=[...new Set(DATA.map(s=>s.cls))].sort((a,b)=>a.localeCompare(b,'th',{numeric:true}));
     if(!CLS||!classes.includes(CLS))CLS=classes[0]||'';
@@ -91,24 +91,24 @@ async function load(){const pin=SS.get('m3:tp');if(!pin){gate();return}
     render()}
   catch(e){if(e.message==='pin'){SS.set('m3:tp','');gate('รหัสไม่ถูกต้อง')}else $('#out').innerHTML=`<div class="msg no">${esc(e.message)}</div>`}}
 const pick=u=>u?($('#scoreSel').value==='first'?u.first:u.best):null;
-function cell(u){if(!u)return '<td class="c na">–</td>';const s=pick(u);const ok=s.s/s.m>=.6;return `<td class="c"><span class="pill ${ok?'ok':'no'}">${s.s}/${s.m}</span>${u.passed?' ✅':''}</td>`}
+function cell(u){if(!u)return '<td class="c na">–</td>';const s=pick(u);const ok=s.s>=60;return `<td class="c"><span class="pill ${ok?'ok':'no'}">${s.s}</span>${u.passed?' ✅':''}</td>`}
 function render(){if(!DATA)return;const unitV=$('#unitSel').value;
   const list=DATA.filter(s=>s.cls===CLS).sort((a,b)=>num(a.no)-num(b.no)||a.name.localeCompare(b.name,'th'));
   if(!list.length){$('#out').innerHTML='<div class="msg">ยังไม่มีนักเรียนส่งคะแนน</div>';VIEW=[];return}
   if(unitV==='all'){
-    VIEW=[['เลขที่','ชื่อ',...UNITS.map(([n])=>'U'+n),'ผ่าน (หน่วย)']].concat(list.map(s=>[s.no,s.name,...UNITS.map(([n])=>{const u=s.u[n];if(!u)return '';const x=pick(u);return x.s+'/'+x.m+(u.passed?' ผ่าน':'')}),UNITS.filter(([n])=>s.u[n]&&s.u[n].passed).length]));
-    $('#out').innerHTML=`<div class="card"><h2>ห้อง ${esc(CLS)} · ภาพรวม 8 หน่วย <small>คะแนนแบบทดสอบย่อย (${$('#scoreSel').value==='first'?'ครั้งแรก':'สูงสุด'}) · ✅ = ผ่าน 60%</small></h2><div class="tw"><table>
+    VIEW=[['เลขที่','ชื่อ',...UNITS.map(([n])=>'U'+n),'ผ่าน (หน่วย)']].concat(list.map(s=>[s.no,s.name,...UNITS.map(([n])=>{const u=s.u[n];if(!u)return '';const x=pick(u);return x.s+(u.passed?' ผ่าน':'')}),UNITS.filter(([n])=>s.u[n]&&s.u[n].passed).length]));
+    $('#out').innerHTML=`<div class="card"><h2>ห้อง ${esc(CLS)} · ภาพรวม 8 หน่วย <small>คะแนนรวมเต็ม 100 (${$('#scoreSel').value==='first'?'ครั้งแรก':'สูงสุด'}) · ✅ = ผ่าน 60</small></h2><div class="tw"><table>
       <tr><th>เลขที่</th><th>ชื่อ</th>${UNITS.map(([n])=>`<th class="c">U${n}</th>`).join('')}<th class="c">ผ่าน</th></tr>
       ${list.map(s=>`<tr><td>${esc(s.no)}</td><td>${esc(s.name)}</td>${UNITS.map(([n])=>cell(s.u[n])).join('')}<td class="c"><b>${UNITS.filter(([n])=>s.u[n]&&s.u[n].passed).length}</b>/8</td></tr>`).join('')}</table></div></div>`;
     return}
   const n=+unitV,rows=list.map(s=>({s,u:s.u[n]}));const done=rows.filter(r=>r.u),passN=done.filter(r=>r.u.passed).length;
-  VIEW=[['เลขที่','ชื่อ','แบบฝึกคำศัพท์','แบบฝึกไวยากรณ์','แบบฝึกรวม','สอบครั้งแรก','สอบสูงสุด','จำนวนครั้ง','ผล','รหัสตรวจสอบล่าสุด','ส่งล่าสุด']].concat(rows.map(({s,u})=>u?[s.no,s.name,u.practice?u.practice.vocab+'/'+u.practice.vocabMax:'',u.practice?u.practice.gram+'/'+u.practice.gramMax:'',u.practice?u.practice.s+'/'+u.practice.m:'',u.first.s+'/'+u.first.m,u.best.s+'/'+u.best.m,u.n,u.passed?'ผ่าน':'ไม่ผ่าน',u.code,new Date(u.last).toLocaleString('th-TH')]:[s.no,s.name,'','','','','','','ยังไม่ส่ง','','']));
+  VIEW=[['เลขที่','ชื่อ','แบบฝึกคำศัพท์','แบบฝึกไวยากรณ์','แบบฝึกรวม','แบบทดสอบล่าสุด','คะแนนรวมครั้งแรก','คะแนนรวมสูงสุด','จำนวนครั้ง','ผล','รหัสตรวจสอบล่าสุด','ส่งล่าสุด']].concat(rows.map(({s,u})=>u?[s.no,s.name,u.practice?u.practice.vocab+'/'+u.practice.vocabMax:'',u.practice?u.practice.gram+'/'+u.practice.gramMax:'',u.practice?u.practice.s+'/'+u.practice.m:'',u.quizRaw?u.quizRaw.s+'/'+u.quizRaw.m:'',u.first.s,u.best.s,u.n,u.passed?'ผ่าน':'ไม่ผ่าน',u.code,new Date(u.last).toLocaleString('th-TH')]:[s.no,s.name,'','','','','','','ยังไม่ส่ง','','']));
   $('#out').innerHTML=`<div class="sum"><div><b>${done.length}/${rows.length}</b><span>ส่งแล้ว</span></div><div><b>${passN}</b><span>ผ่าน 60%</span></div><div><b>${done.length-passN}</b><span>ยังไม่ผ่าน</span></div></div>
    <div class="card"><h2>ห้อง ${esc(CLS)} · Unit ${n} ${esc(UNITS[n-1][1])} <small>แบบฝึกแสดงผลเท่านั้น ไม่นำไปคิดคะแนน</small></h2><div class="tw"><table>
-   <tr><th>เลขที่</th><th>ชื่อ</th><th class="c">แบบฝึก<br>คำศัพท์</th><th class="c">แบบฝึก<br>ไวยากรณ์</th><th class="c">สอบ<br>ครั้งแรก</th><th class="c">สอบ<br>สูงสุด</th><th class="c">ครั้ง</th><th class="c">ผล</th><th>รหัสตรวจสอบ</th><th>ส่งล่าสุด</th></tr>
+   <tr><th>เลขที่</th><th>ชื่อ</th><th class="c">แบบฝึก<br>คำศัพท์</th><th class="c">แบบฝึก<br>ไวยากรณ์</th><th class="c">แบบทดสอบ<br>ล่าสุด</th><th class="c">รวม<br>ครั้งแรก</th><th class="c">รวม<br>สูงสุด</th><th class="c">ครั้ง</th><th class="c">ผล</th><th>รหัสตรวจสอบ</th><th>ส่งล่าสุด</th></tr>
    ${rows.map(({s,u})=>u?`<tr><td>${esc(s.no)}</td><td>${esc(s.name)}</td><td class="c">${u.practice?u.practice.vocab+'/'+u.practice.vocabMax:'–'}</td><td class="c">${u.practice?u.practice.gram+'/'+u.practice.gramMax:'–'}</td>
-     <td class="c">${u.first.s}/${u.first.m}</td><td class="c"><b>${u.best.s}/${u.best.m}</b></td><td class="c">${u.n}</td><td class="c ${u.passed?'ok':'no'}">${u.passed?'ผ่าน ✅':'ยังไม่ผ่าน'}</td><td>${u.code?`<span class="code">${esc(u.code.slice(0,3)+'-'+u.code.slice(3))}</span>`:''}</td><td>${esc(new Date(u.last).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}))}</td></tr>`
-     :`<tr><td>${esc(s.no)}</td><td>${esc(s.name)}</td><td class="c na" colspan="8">ยังไม่ส่งหน่วยนี้</td></tr>`).join('')}</table></div></div>`}
+     <td class="c">${u.quizRaw?u.quizRaw.s+'/'+u.quizRaw.m:'–'}</td><td class="c">${u.first.s}</td><td class="c"><b>${u.best.s}</b></td><td class="c">${u.n}</td><td class="c ${u.passed?'ok':'no'}">${u.passed?'ผ่าน ✅':'ยังไม่ผ่าน'}</td><td>${u.code?`<span class="code">${esc(u.code.slice(0,3)+'-'+u.code.slice(3))}</span>`:''}</td><td>${esc(new Date(u.last).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}))}</td></tr>`
+     :`<tr><td>${esc(s.no)}</td><td>${esc(s.name)}</td><td class="c na" colspan="9">ยังไม่ส่งหน่วยนี้</td></tr>`).join('')}</table></div></div>`}
 $('#cls').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;CLS=b.dataset.c;document.querySelectorAll('#cls button').forEach(x=>x.classList.toggle('on',x===b));render()};
 $('#unitSel').onchange=render;$('#scoreSel').onchange=render;$('#reload').onclick=load;
 $('#csv').onclick=()=>{if(!VIEW.length)return;const csv='﻿'+VIEW.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');

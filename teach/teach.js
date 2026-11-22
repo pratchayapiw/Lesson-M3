@@ -119,8 +119,8 @@ function drawProgress(){const el=$('#pkProg');if(!el)return;el.classList.remove(
   const rows=Object.keys(U).sort((a,b)=>a-b).map(n=>{const r=LS.get('teach:res:u'+n,null)||{},q=r.quiz,p=r.practice;
     return `<tr><td><a href="#u${n}">Unit ${n}</a> ${esc(U[n].title)}</td><td>${p?p.s+'/'+p.m:'–'}</td><td>${q?q.first.s+'/'+q.first.m:'–'}</td><td><b>${q?q.best.s+'/'+q.best.m:'–'}</b></td><td>${q?q.attempts:'–'}</td><td>${q?(q.passed?'<span class="ok">ผ่าน ✅</span>':'<span class="no">ยังไม่ผ่าน</span>'):'<a href="#u'+n+'/quiz">ไปทำ →</a>'}</td></tr>`}).join('');
   const pass=Object.keys(U).filter(n=>((LS.get('teach:res:u'+n,null)||{}).quiz||{}).passed).length;
-  el.innerHTML=`<h2>📊 My Progress · สรุปคะแนนของฉัน</h2><p class="muted">${esc(ME?ME.name+' · ชั้น '+ME.cls+' · เลขที่ '+ME.no:'')} · ผ่านแล้ว ${pass}/8 หน่วย · แบบฝึกไม่นำไปคิดคะแนน · แบบทดสอบย่อยผ่าน 60%</p>
-   <div class="rs-wrap"><table class="rs"><tr><th>หน่วย</th><th>แบบฝึก</th><th>สอบครั้งแรก</th><th>สูงสุด</th><th>ครั้ง</th><th>ผล</th></tr>${rows}</table></div>`}
+  el.innerHTML=`<h2>📊 My Progress · สรุปคะแนนของฉัน</h2><p class="muted">${esc(ME?ME.name+' · ชั้น '+ME.cls+' · เลขที่ '+ME.no:'')} · ผ่านแล้ว ${pass}/8 หน่วย · คะแนนรวม = แบบทดสอบ 80% + แบบฝึก 20% · ผ่าน 60</p>
+   <div class="rs-wrap"><table class="rs"><tr><th>หน่วย</th><th>แบบฝึก</th><th>คะแนนรวมครั้งแรก</th><th>สูงสุด</th><th>ครั้ง</th><th>ผล</th></tr>${rows}</table></div>`}
 function showPicker(){
   app.classList.add('hidden');pickpage.classList.remove('hidden');
   document.title=STU?'บทเรียน ม.3 · Get Involved! M3':'Teaching Hub · Get Involved! M3';
@@ -215,11 +215,11 @@ const R={
    return `<div class="sl">${head(sl)}<div class="body"><div class="glist">${sl.items.map((t,i)=>`<div class="gitem an" style="--i:${2+i}"><span class="no">${i+1}</span><span>${ch(t)}</span><button class="spk" data-say="${esc(t.replace(/\{\{.*?([^|{]+)\*.*?\}\}/g,'$1'))}">🔊</button></div>`).join('')}</div></div></div>`},
  stest(sl){const nWB=(unit.wb||[]).reduce((s,e)=>s+e.items.reduce((a,t)=>a+(t.match(/\[[^\]]+\]|\{\{/g)||[]).length,0),0),last=LS.get('teach:res:u'+unit.n,null);
    return `<div class="sl">${head(sl)}<div class="body"><div class="qzcta"><div class="qzart an" style="--i:2"><span>📝</span></div>
-   <div class="qzinfo an" style="--i:3"><b>แบบฝึก + แบบทดสอบย่อย</b><span>📒 แบบฝึกคำศัพท์และไวยากรณ์ (ไม่นำไปคิดคะแนน)<br>📝 แบบทดสอบย่อย ${(unit.quiz||[]).length} ข้อ · ผ่าน 60%</span>${last&&last.quiz?`<span>${last.quiz.passed?'✅ ผ่านแล้ว':'⏳ ยังไม่ผ่าน'} · สูงสุด ${last.quiz.best.s}/${last.quiz.best.m} · ทำ ${last.quiz.attempts} ครั้ง</span>`:''}
+   <div class="qzinfo an" style="--i:3"><b>แบบฝึก + แบบทดสอบย่อย</b><span>📒 แบบฝึกคำศัพท์และไวยากรณ์<br>📝 แบบทดสอบย่อย 10 ข้อ (สุ่มจาก ${(unit.quiz||[]).length} ข้อ ทุกครั้งไม่ซ้ำชุด)<br>⚖️ คะแนน = แบบทดสอบ 80% + แบบฝึก 20% · ผ่าน 60</span>${last&&last.quiz?`<span>${last.quiz.passed?'✅ ผ่านแล้ว':'⏳ ยังไม่ผ่าน'} · สูงสุด ${last.quiz.best.s}/${last.quiz.best.m} · ทำ ${last.quiz.attempts} ครั้ง</span>`:''}
    <div class="qzbtns"><button data-tool="stest" class="go">▶ เริ่มทำ</button></div></div></div></div></div>`},
  quiz(sl){const q=unit.quiz||[];return `<div class="sl">${head(sl)}<div class="body"><div class="qzcta">
    <div class="qzart an" style="--i:2"><span>📝</span></div>
-   <div class="qzinfo an" style="--i:3"><b>${q.length} ข้อ · ปรนัย 4 ตัวเลือก</b><span>คำศัพท์ · ไวยากรณ์ · ภาษาเพื่อการสื่อสาร</span>
+   <div class="qzinfo an" style="--i:3"><b>10 ข้อ · สุ่มจากคลัง ${q.length} ข้อ</b><span>คำศัพท์ · ไวยากรณ์ · สลับข้อและตัวเลือกทุกครั้ง<br>คะแนนรวม = แบบทดสอบ 80% + แบบฝึก 20% · ผ่าน 60</span>
    <div class="qzbtns"><button data-tool="quiz" class="go">▶ เริ่มสอบบนจอ</button><button data-print="1">🖨️ พิมพ์ข้อสอบ</button></div></div></div></div></div>`},
  read(sl){return `<div class="sl">${head(sl)}<div class="body"><div class="rd">
    <div class="rtext an" style="--i:2"><div class="rh">${sl.h||''} <button class="spk" data-say="${esc(plain(sl.text.join(' ')))}">🔊</button></div>${sl.text.map(p=>`<p>${md(p)}</p>`).join('')}</div>
@@ -538,6 +538,11 @@ function practiceSets(){const sets=[];
   const vc=(window.TEACH_VCTX||{})[unit.n];if(vc)sets.push({type:'choose',part:'vocab',title:'② คำศัพท์ในบริบท · เลือกคำที่เหมาะสม',items:vc});
   (unit.wb||[]).forEach(e=>sets.push(Object.assign({part:'grammar'},e,{title:'③ ไวยากรณ์ · '+e.title})));
   return sets}
+const QN=10,WQ=0.8,WP=0.2;
+function drawSet(){const Q=unit.quiz||[],key='teach:qlast:u'+unit.n,last=LS.get(key,[]);
+  const fresh=shuffle(Q.map((_,i)=>i).filter(i=>!last.includes(i))),old=shuffle(last.filter(i=>i<Q.length));
+  const set=fresh.concat(old).slice(0,Math.min(QN,Q.length));LS.set(key,set);
+  const opt={};set.forEach(i=>opt[i]=shuffle(Q[i][1].map((_,k)=>k)));return {order:shuffle(set),opt}}
 function initTest(){clearInterval(retakeT);
   const sets=practiceSets(),items=[];
   sets.forEach((e,ei)=>{if(e.type==='vgame'){e.start=items.length;e.words.forEach((w,ti)=>items.push({kind:'vg',ei,ti,part:e.part,a:w[2],q:w[1]}));return}
@@ -545,23 +550,23 @@ function initTest(){clearInterval(retakeT);
     if(e.type==='choose')(t.match(/\{\{(.*?)\}\}/g)||[]).forEach(m=>{const os=m.slice(2,-2).split('|');items.push({kind:'ch',ei,ti,part:e.part,opts:os.map(o=>o.replace(/\*$/,'')),a:os.findIndex(o=>o.endsWith('*'))})});
     else (t.match(/\[([^\]]+)\]/g)||[]).forEach(m=>items.push({kind:'gap',ei,ti,part:e.part,a:m.slice(1,-1)}))})});
   const prev=LS.get('teach:res:u'+unit.n,null);
-  T={sets,items,ans:{},qa:[],qi:0,order:shuffle((unit.quiz||[]).map((_,i)=>i)),stage:'wb',practice:null,attempt:prev&&prev.quiz?prev.quiz.attempts:0};drawTest()}
+  T={sets,items,ans:{},qa:[],qi:0,order:[],stage:'wb',opt:{},practice:null,attempt:prev&&prev.quiz?prev.quiz.attempts:0};const d=drawSet();T.order=d.order;T.opt=d.opt;drawTest()}
 function setsHTML(){let k=0;return T.sets.map(e=>`<div class="tw-ex"><h4>${esc(e.title)}</h4>${e.bank?`<div class="tw-bank">${e.bank.map(b=>`<span>${esc(b)}</span>`).join('')}</div>`:''}
   ${e.type==='vgame'?(k+=e.words.length,'<div class="vg" id="vgame"></div>'):''}<ol>${e.type==='vgame'?'':e.items.map(t=>`<li>${e.type==='choose'?t.replace(/\{\{(.*?)\}\}/g,(m,a)=>{const id=k++;return `<span class="tw-ch" data-k="${id}">${a.split('|').map((o,oi)=>`<button type="button" data-k="${id}" data-o="${oi}" class="${T.ans[id]===oi?'on':''}">${esc(o.replace(/\*$/,''))}</button>`).join('')}</span>`}).replace(/\*\*/g,'')
    :t.replace(/\[([^\]]+)\]/g,()=>{const id=k++;return `<input class="tw-in" data-k="${id}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(T.ans[id]||'')}" size="${Math.max(6,T.items[id].a.length+2)}">`}).replace(/\*\*/g,'')}</li>`).join('')}</ol></div>`).join('')}
 const answered=()=>Object.keys(T.ans).filter(k=>T.ans[k]!=null&&String(T.ans[k]).trim()!=='').length;
 function drawTest(){const b=$('#twBody');if(!b||!T)return;const Q=unit.quiz||[];
   if(T.stage==='wb'){b.innerHTML=`<div class="tw-top"><b>📒 แบบฝึก</b><span>ตอบแล้ว ${answered()}/${T.items.length}</span></div>
-    <p class="tw-hint">แบบฝึกมีคะแนนให้ดู แต่<b>ไม่นำไปคิด</b>กับแบบทดสอบย่อย · ทำแล้วไปต่อที่แบบทดสอบย่อย</p>${setsHTML()}
-    <div class="tw-foot"><button class="btn big" id="twToQuiz">ต่อไป: 📝 แบบทดสอบย่อย ${Q.length} ข้อ →</button></div>`;
+    <p class="tw-hint">คะแนนรวม = แบบทดสอบย่อย <b>80%</b> + แบบฝึกนี้ <b>20%</b> · ต้องได้ 60 ขึ้นไป · ทำแล้วไปต่อที่แบบทดสอบย่อย</p>${setsHTML()}
+    <div class="tw-foot"><button class="btn big" id="twToQuiz">ต่อไป: 📝 แบบทดสอบย่อย ${T.order.length} ข้อ →</button></div>`;
     const vs=T.sets.find(s=>s.type==='vgame');if(vs){if(!T.vg)vgInit(vs.words,vs.start);vgDraw()}return}
-  if(T.stage==='quiz'){const qn=T.order[T.qi],q=Q[qn];b.innerHTML=`<div class="tw-top"><b>📝 แบบทดสอบย่อย${T.attempt?` · ครั้งที่ ${T.attempt+1}`:''}</b><span>ข้อ ${T.qi+1} / ${Q.length}</span></div><div class="tw-bar"><i style="width:${T.qi/Q.length*100}%"></i></div>
+  if(T.stage==='quiz'){const qn=T.order[T.qi],q=Q[qn];b.innerHTML=`<div class="tw-top"><b>📝 แบบทดสอบย่อย${T.attempt?` · ครั้งที่ ${T.attempt+1}`:''}</b><span>ข้อ ${T.qi+1} / ${T.order.length}</span></div><div class="tw-bar"><i style="width:${T.qi/T.order.length*100}%"></i></div>
     <div class="qzq">${md(q[0])} <button class="spk" data-say="${esc(q[0])}">🔊</button></div>
-    <div class="qzo tw-qo">${q[1].map((o,i)=>`<button data-tq="${i}" class="c${i}"><i>${'ABCD'[i]}</i>${md(o)}</button>`).join('')}</div>
+    <div class="qzo tw-qo">${(T.opt[qn]||[0,1,2,3]).map((oi,k)=>`<button data-tq="${oi}" class="c${k}"><i>${'ABCD'[k]}</i>${md(q[1][oi])}</button>`).join('')}</div>
     <div class="tw-foot"><button class="btn alt" id="twBack">‹ ${T.qi?'ข้อก่อนหน้า':(T.practice?'':'กลับไปแบบฝึก')}</button></div>`;
     if(!T.qi&&T.practice)$('#twBack').remove();return}
   if(T.stage==='check'){const nb=T.items.length-answered();
-    b.innerHTML=`<div class="tw-done"><div class="tw-emo">📮</div><h3>พร้อมส่งคำตอบ?</h3><p>${T.practice?'':`แบบฝึกตอบแล้ว ${T.items.length-nb}/${T.items.length} ข้อ${nb?` <span style="color:#c0392b">(ยังว่าง ${nb} ข้อ)</span>`:''} · `}แบบทดสอบย่อยตอบครบ ${Q.length} ข้อ</p>
+    b.innerHTML=`<div class="tw-done"><div class="tw-emo">📮</div><h3>พร้อมส่งคำตอบ?</h3><p>${T.practice?'':`แบบฝึกตอบแล้ว ${T.items.length-nb}/${T.items.length} ข้อ${nb?` <span style="color:#c0392b">(ยังว่าง ${nb} ข้อ)</span>`:''} · `}แบบทดสอบย่อยตอบครบ ${T.order.length} ข้อ</p>
     <div class="row" style="justify-content:center">${T.practice?'':'<button class="btn alt" id="twEdit">‹ กลับไปแก้แบบฝึก</button>'}<button class="btn big" id="twSend">📤 ส่งคำตอบ</button></div></div>`;return}
   if(T.stage==='done')b.innerHTML=T.html}
 function gradePractice(){const by={vocab:[0,0],grammar:[0,0]},wrong=[];
@@ -570,23 +575,24 @@ function gradePractice(){const by={vocab:[0,0],grammar:[0,0]},wrong=[];
   return {vocab:by.vocab[0],vocabMax:by.vocab[1],gram:by.grammar[0],gramMax:by.grammar[1],s:by.vocab[0]+by.grammar[0],m:by.vocab[1]+by.grammar[1],wrong}}
 function gradeQuiz(){const Q=unit.quiz||[];let s=0;const wrong=[];
   T.order.forEach((qn,i)=>{const q=Q[qn];if(T.qa[i]===q[2])s++;else wrong.push({p:'quiz',ex:'ข้อ '+(i+1),q:q[0].replace(/\*\*/g,''),your:T.qa[i]==null?'—':q[1][T.qa[i]],a:q[1][q[2]],why:q[3]})});
-  return {s,m:Q.length,wrong}}
+  return {s,m:T.order.length,wrong}}
 function flushQueue(){if(!CFG.supabaseUrl)return;const q=LS.get('m3:queue',[]);if(!q.length)return;const keep=[];
   Promise.all(q.map(row=>fetch(`${CFG.supabaseUrl}/rest/v1/${CFG.table}`,{method:'POST',headers:{apikey:CFG.supabaseKey,Authorization:`Bearer ${CFG.supabaseKey}`,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(row)}).then(r=>{if(!r.ok)keep.push(row)}).catch(()=>keep.push(row)))).then(()=>LS.set('m3:queue',keep))}
 setTimeout(flushQueue,1500);addEventListener('online',flushQueue);
 async function vcode(s){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('m3-check:'+s));return [...new Uint8Array(h)].slice(0,3).map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase()}catch(e){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(16).slice(0,6).toUpperCase()}}
 function saveRes(p,q,passed){const key='teach:res:u'+unit.n,r=LS.get(key,{})||{};
   if(!r.practice)r.practice={s:p.s,m:p.m,vocab:p.vocab,vocabMax:p.vocabMax,gram:p.gram,gramMax:p.gramMax};
-  const z=r.quiz||{attempts:0};z.attempts++;const cur={s:q.s,m:q.m};if(!z.first)z.first=cur;if(!z.best||q.s>z.best.s)z.best=cur;z.last=cur;z.passed=z.passed||passed;r.quiz=z;LS.set(key,r);return r}
+  const z=r.quiz||{attempts:0};z.attempts++;const cur={s:q.total,m:100,qs:q.s,qm:q.m};if(!z.first)z.first=cur;if(!z.best||q.total>z.best.s)z.best=cur;z.last=cur;z.passed=z.passed||passed;r.quiz=z;LS.set(key,r);return r}
 async function sendRow(p,q,passed,code,ts,attempt){if(!CFG.supabaseUrl||!ME)return 'local';
-  const row={unit:'unit'+unit.n+'-test',student_name:ME.name,class:ME.cls,student_no:ME.no,kind:'quiz',skill:'all',score:q.s,max_score:q.m,
-    detail:{part:'practice+quiz',code,ts,attempt,passed,practice:{s:p.s,m:p.m,vocab:p.vocab,vocabMax:p.vocabMax,gram:p.gram,gramMax:p.gramMax},wrong:q.wrong.map(w=>w.q).slice(0,10)}};
+  const row={unit:'unit'+unit.n+'-test',student_name:ME.name,class:ME.cls,student_no:ME.no,kind:'quiz',skill:'all',score:q.total,max_score:100,
+    detail:{part:'practice+quiz',total:q.total,quiz:{s:q.s,m:q.m,w:q.qw},code,ts,attempt,passed,practice:{s:p.s,m:p.m,vocab:p.vocab,vocabMax:p.vocabMax,gram:p.gram,gramMax:p.gramMax},wrong:q.wrong.map(w=>w.q).slice(0,10)}};
   try{const x=await fetch(`${CFG.supabaseUrl}/rest/v1/${CFG.table}`,{method:'POST',keepalive:true,headers:{apikey:CFG.supabaseKey,Authorization:`Bearer ${CFG.supabaseKey}`,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(row)});
     if(!x.ok)throw 0;return 'sent'}catch(e){const qq=LS.get('m3:queue',[]);qq.push(row);LS.set('m3:queue',qq.slice(-50));return 'queued'}}
 let liveT=null;
-async function submitTest(){const p=T.practice||gradePractice();T.practice=p;const q=gradeQuiz();const qp=q.s/q.m,passed=qp>=PASS;T.attempt++;
+async function submitTest(){const p=T.practice||gradePractice();T.practice=p;const q=gradeQuiz();const qp=q.s/q.m,pp=p.m?p.s/p.m:0;
+  const qw=Math.round(qp*WQ*1000)/10,pw=Math.round(pp*WP*1000)/10,total=Math.round((qw+pw)*10)/10,passed=total>=PASS*100;q.total=total;q.qw=qw;q.pw=pw;T.attempt++;
   const now=new Date(),ts=now.toISOString(),me=ME||{name:'(ไม่ได้ลงชื่อ)',cls:'-',no:'-'};
-  const code=await vcode([me.name,me.cls,me.no,unit.n,q.s,q.m,ts].join('|'));
+  const code=await vcode([me.name,me.cls,me.no,unit.n,total,q.s,q.m,ts].join('|'));
   const res=saveRes(p,q,passed);
   const dt=now.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'medium'});
   const wm=Array(18).fill(`<span>${esc(me.name)} · ${esc(me.cls)} · ${esc(me.no)}</span>`).join('');
@@ -597,12 +603,12 @@ async function submitTest(){const p=T.practice||gradePractice();T.practice=p;con
    <div class="tw-code"><small>รหัสตรวจสอบ</small><b>${code.slice(0,3)}-${code.slice(3)}</b></div></div>
    <div class="tw-time"><span>📤 ส่งเมื่อ ${dt} · ครั้งที่ ${T.attempt}</span><span class="tw-live">🔴 เวลาขณะนี้ <b id="twClock"></b></span></div>
    <div class="tw-done"><div class="tw-emo">${passed?'🏆':'💪'}</div>
-   <div class="tw-big ${passed?'ok':'no'}"><small>📝 แบบทดสอบย่อย (คะแนนจริง)</small><b>${q.s} / ${q.m} · ${qpct}%</b><span>${passed?'ผ่านเกณฑ์ 60% ✅':'ยังไม่ผ่านเกณฑ์ 60%'}</span></div>
-   <div class="tw-sum"><div><b>${p.vocab}/${p.vocabMax}</b><span>แบบฝึกคำศัพท์</span></div><div><b>${p.gram}/${p.gramMax}</b><span>แบบฝึกไวยากรณ์</span></div><div><b>${ppct}%</b><span>แบบฝึกรวม (ไม่นำไปคิด)</span></div></div>
+   <div class="tw-big ${passed?'ok':'no'}"><small>คะแนนรวมของหน่วย (เต็ม 100)</small><b>${total}</b><span>${passed?'ผ่านเกณฑ์ 60% ✅':'ยังไม่ผ่านเกณฑ์ 60%'}</span></div>
+   <div class="tw-sum"><div><b>${qw}<small>/80</small></b><span>📝 แบบทดสอบย่อย ${q.s}/${q.m} ข้อ (80%)</span></div><div><b>${pw}<small>/20</small></b><span>📒 แบบฝึก ${p.s}/${p.m} (20%)</span></div><div><b>${p.vocab}/${p.vocabMax} · ${p.gram}/${p.gramMax}</b><span>แบบฝึกคำศัพท์ · ไวยากรณ์</span></div></div>
    <p id="twSent" class="muted">กำลังส่งคะแนน…</p>
-   ${passed?'':`<div class="tw-retry">⏳ ต้องทำแบบทดสอบย่อยใหม่ · เริ่มอัตโนมัติใน <b id="twCount">15</b> วินาที <button class="btn" id="twRetry">เริ่มเลย</button></div>`}</div></div>
+   ${passed?'':`<div class="tw-retry">⏳ ต้องทำแบบทดสอบย่อยใหม่ (ชุดคำถามใหม่) · เริ่มอัตโนมัติใน <b id="twCount">15</b> วินาที <button class="btn" id="twRetry">เริ่มเลย</button></div>`}</div></div>
    <p class="tw-note">👩‍🏫 ครูตรวจได้: ชื่อและรหัสตรวจสอบต้องตรงกับหน้า “สรุปคะแนนนักเรียน” · นาฬิกาสีแดงเดินอยู่ตลอด (ภาพที่ถ่ายไว้จะไม่เดิน)</p>
-   ${q.wrong.length?`<h4 class="tw-h">📝 แบบทดสอบย่อย: ข้อที่ผิด (${q.wrong.length})</h4><p class="tw-hint">ทบทวนเนื้อหาแล้วลองใหม่ (ลำดับข้อจะสลับ)</p>`:''}
+   ${q.wrong.length?`<h4 class="tw-h">📝 แบบทดสอบย่อย: ข้อที่ผิด (${q.wrong.length})</h4><p class="tw-hint">ทบทวนเนื้อหาแล้วลองใหม่ · รอบใหม่จะได้คำถามชุดใหม่และสลับตัวเลือก</p>`:''}
    ${!passed?'':q.wrong.length?`<div class="tw-wrong">${q.wrong.map(w=>`<div><small>${esc(w.ex)}</small><div>${esc(w.q)}</div><div>คำตอบของฉัน: <s>${esc(w.your)}</s> → <b>${esc(w.a)}</b>${w.why?` <small>(${esc(w.why)})</small>`:''}</div></div>`).join('')}</div>`:''}
    ${p.wrong.length&&T.attempt===1?`<h4 class="tw-h">📒 แบบฝึก: ข้อที่ต้องทบทวน (${p.wrong.length})</h4><div class="tw-wrong">${p.wrong.map(w=>`<div><small>${esc(w.ex)}</small><div>${esc(w.q)}</div><div>คำตอบของฉัน: <s>${esc(w.your)}</s> → <b>${esc(w.a)}</b></div></div>`).join('')}</div>`:''}
    <div class="tw-foot">${passed?`<button class="btn alt" id="twAgain">↺ ฝึกอีกครั้ง</button><a class="btn" href="#progress">📊 ดูสรุปทุกหน่วย</a>`:''}</div>`;
@@ -610,14 +616,14 @@ async function submitTest(){const p=T.practice||gradePractice();T.practice=p;con
   clearInterval(liveT);const tick=()=>{const c=$('#twClock');if(!c){clearInterval(liveT);return}c.textContent=new Date().toLocaleTimeString('th-TH')};tick();liveT=setInterval(tick,1000);
   if(!passed){let n=15;clearInterval(retakeT);retakeT=setInterval(()=>{n--;const c=$('#twCount');if(!c){clearInterval(retakeT);return}c.textContent=n;if(n<=0)startRetake()},1000)}
   const s=await sendRow(p,q,passed,code,ts,T.attempt);const el=$('#twSent');if(el)el.textContent=s==='sent'?'✅ ส่งคะแนนถึงครูแล้ว':s==='queued'?'📶 ยังส่งไม่ได้ (ไม่มีอินเทอร์เน็ต) ระบบจะลองส่งใหม่':'บันทึกในเครื่องนี้แล้ว'}
-function startRetake(){clearInterval(retakeT);T.qa=[];T.qi=0;T.order=shuffle(T.order);T.stage='quiz';drawTest();const tb=$('.tbody');if(tb)tb.scrollTop=0}
+function startRetake(){clearInterval(retakeT);T.qa=[];T.qi=0;{const d=drawSet();T.order=d.order;T.opt=d.opt}T.stage='quiz';drawTest();const tb=$('.tbody');if(tb)tb.scrollTop=0}
 document.addEventListener('input',e=>{const t=e.target;if(T&&(t.classList.contains('tw-in')||t.classList.contains('tw-sel'))){T.ans[+t.dataset.k]=t.value;const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length}});
 document.addEventListener('change',e=>{const t=e.target;if(T&&t.classList.contains('tw-sel')){T.ans[+t.dataset.k]=t.value;const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length}});
 document.addEventListener('click',e=>{const t=e.target;if(!T)return;
   const c=t.closest('.tw-ch button');if(c){T.ans[+c.dataset.k]=+c.dataset.o;c.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===c));const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length;return}
   if(t.id==='twToQuiz'){T.stage='quiz';drawTest();$('.tbody').scrollTop=0;return}
   const q=t.closest('[data-tq]');if(q&&!T.lock){T.lock=1;T.qa[T.qi]=+q.dataset.tq;q.classList.add('pick');
-    setTimeout(()=>{T.lock=0;T.qi++;if(T.qi>=(unit.quiz||[]).length)T.stage='check';drawTest();$('.tbody').scrollTop=0},450);return}
+    setTimeout(()=>{T.lock=0;T.qi++;if(T.qi>=T.order.length)T.stage='check';drawTest();$('.tbody').scrollTop=0},450);return}
   if(t.id==='twBack'){if(T.qi>0)T.qi--;else T.stage='wb';drawTest();return}
   if(t.id==='twEdit'){T.stage='wb';drawTest();$('.tbody').scrollTop=0;return}
   if(t.id==='twSend'){submitTest();$('.tbody').scrollTop=0;return}
@@ -644,8 +650,10 @@ async function initResults(){const b=$('#rsBody');if(!b)return;let pin='';try{pi
 
 /* unit quiz */
 let qz=0,qzScore=0,qzDone=[];
-function initQuiz(){qz=0;qzScore=0;qzDone=[];drawQuiz()}
-function drawQuiz(){const Q=unit.quiz||[];const b=$('#qzBody');if(!b)return;
+function pickQuiz(n){const B=unit.quiz||[];return shuffle(B.map((_,i)=>i)).slice(0,Math.min(n||10,B.length)).map(i=>{const q=B[i],p=shuffle(q[1].map((_,k)=>k));return [q[0],p.map(k=>q[1][k]),p.indexOf(q[2]),q[3]]})}
+let TQ=[];
+function initQuiz(){qz=0;qzScore=0;qzDone=[];TQ=pickQuiz(10);drawQuiz()}
+function drawQuiz(){const Q=TQ;const b=$('#qzBody');if(!b)return;
   if(qz>=Q.length){b.innerHTML=`<div class="qzend"><div class="big">🏁</div><h3>จบแบบทดสอบ</h3><p>ทั้งห้องตอบถูก <b>${qzScore}</b> / ${Q.length} ข้อ</p><button class="btn big" id="qzAgain">↺ เริ่มใหม่</button></div>`;confetti(120);return}
   const q=Q[qz];b.innerHTML=`<div class="row"><span class="qzn">ข้อ ${qz+1} / ${Q.length}</span><span style="flex:1"></span><span class="qzn">✔ ${qzScore}</span></div>
    <div class="qzq">${md(q[0])} <button class="spk" data-say="${esc(q[0])}">🔊</button></div>
@@ -653,15 +661,15 @@ function drawQuiz(){const Q=unit.quiz||[];const b=$('#qzBody');if(!b)return;
    <div class="fb" id="qzFb"></div>
    <div class="row" style="justify-content:center"><button class="btn alt" id="qzShow">🔑 เฉลย</button><button class="btn" id="qzNext">ข้อต่อไป →</button></div>`}
 document.addEventListener('click',e=>{const t=e.target;if(!unit)return;
-  const a=t.closest('[data-qa]');if(a){const q=unit.quiz[qz];const ok=+a.dataset.qa===q[2];if(qzDone[qz]==null){qzDone[qz]=ok;if(ok)qzScore++}
+  const a=t.closest('[data-qa]');if(a){const q=TQ[qz];const ok=+a.dataset.qa===q[2];if(qzDone[qz]==null){qzDone[qz]=ok;if(ok)qzScore++}
     $$('#qzBody [data-qa]').forEach(b=>b.classList.toggle('ok',+b.dataset.qa===q[2]));if(!ok)a.classList.add('no');
     $('#qzFb').innerHTML=`<b class="${ok?'ok':'no'}">${ok?'✅ ถูกต้อง!':'❌ ยังไม่ใช่'}</b> คำตอบ <b>${'ABCD'[q[2]]}</b> — ${q[3]||''}`;if(ok)confetti(50);return}
-  if(t.id==='qzShow'){const q=unit.quiz[qz];$$('#qzBody [data-qa]').forEach(b=>b.classList.toggle('ok',+b.dataset.qa===q[2]));$('#qzFb').innerHTML=`คำตอบ <b>${'ABCD'[q[2]]}</b> — ${q[3]||''}`;return}
+  if(t.id==='qzShow'){const q=TQ[qz];$$('#qzBody [data-qa]').forEach(b=>b.classList.toggle('ok',+b.dataset.qa===q[2]));$('#qzFb').innerHTML=`คำตอบ <b>${'ABCD'[q[2]]}</b> — ${q[3]||''}`;return}
   if(t.id==='qzNext'){qz++;drawQuiz();return}
   if(t.id==='qzAgain'){initQuiz();return}
   if(t.id==='qzPrint'){printQuiz();return}
 });
-function printQuiz(){const Q=unit.quiz||[];const w=window.open('','_blank');if(!w){alert('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาต pop-up');return}
+function printQuiz(){const Q=pickQuiz(10);const w=window.open('','_blank');if(!w){alert('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาต pop-up');return}
   const st=s=>String(s).replace(/\*\*/g,'');
   w.document.write(`<!doctype html><meta charset="utf-8"><title>Unit ${unit.n} Quiz</title><style>body{font-family:Sarabun,Tahoma,sans-serif;max-width:760px;margin:30px auto;padding:0 20px;font-size:17px;line-height:1.5}h1{font-size:24px;margin:0}.hd{display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:14px}ol>li{margin:0 0 12px}.op{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;margin-top:4px}.key{page-break-before:always}</style>
   <div class="hd"><div><h1>Unit ${unit.n} ${unit.title} – Quiz</h1>Get Involved! M3 · อ23102</div><div>ชื่อ ..............................<br>ชั้น ......... เลขที่ ......... คะแนน ...... / ${Q.length}</div></div>
