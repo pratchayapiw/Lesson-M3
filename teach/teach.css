@@ -662,3 +662,6 @@ html.stu #notesBtn,html.stu .clock{display:none}
 .disc.wide .q,.disc.wide .tip{flex:1 1 45%;margin:0}
 .disc.wide .rtable{font-size:30px;border-spacing:0 6px}
 .disc.wide .rtable td,.disc.wide .rtable th{padding:7px 16px}
+
+.glist:has(.gitem:nth-child(5)) .gitem{font-size:33px;padding:10px 22px}
+.glist:has(.gitem:nth-child(5)){gap:12px}

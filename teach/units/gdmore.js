@@ -111,3 +111,86 @@ window.TEACH_GD_PRAC={
 8:{gram:['What [do] you [have to] do after school?','He [has to] finish his homework tonight.','We [don’t have to] wear a uniform on Fridays.','You [mustn’t] run in the hall. It’s not allowed.','[Does] she [have to] cook dinner? – No, she [doesn’t].'],
    gram2:['[Are] you [going to] watch the match? – Yes, I [am].','I’m [meeting] (meet) my friends at 4 o’clock on Saturday.','“I’m cold.” – “I[’ll close] (close) the window.”','She [isn’t going to] (not / go to) stay in a hotel.']}
 };
+
+/* ===== More complete A2+ coverage (points beyond the book's Grammar reference) ===== */
+(function(M,P){
+const add=(n,k,slides,prac)=>{M[n]=M[n]||{};(M[n][k]=M[n][k]||[]).push(...slides);if(prac){P[n]=P[n]||{};(P[n][k]=P[n][k]||[]).push(...prac)}};
+add(1,'gram',[
+ {title:'Facts, timetables & routines',ex:['Water **boils** at 100°C.','The bus **leaves** at 7:15 every morning.','The sun **rises** in the east.'],
+  qs:['ความจริงทั่วไป/วิทยาศาสตร์ใช้ → [Simple present]','ตารางเวลา (รถ เรียน หนัง) ใช้ → [Simple present] แม้พูดถึงอนาคต','The film [starts] (start) at 8 tonight.'],tip:'Simple present = <b>นิสัย กิจวัตร ความจริง ตารางเวลา</b>'}],
+ ['The museum [opens] (open) at 9 a.m.','Cats [don’t like] (not like) water.']);
+add(1,'gram2',[
+ {title:'Temporary actions & changes',ex:['I**’m staying** with my aunt **this week**.','My English **is getting** better.','**These days** she**’s learning** Korean.'],
+  qs:['สิ่งที่ทำชั่วคราว (ช่วงนี้) ใช้ → [Present progressive]','สิ่งที่กำลังเปลี่ยนแปลง ใช้ → [getting / becoming + adj]','คำบอกเวลา: [this week, these days, at the moment]'],tip:'เทียบ: I <b>live</b> in Nonthaburi. (ถาวร) / I<b>’m living</b> with my cousin this month. (ชั่วคราว)'}],
+ ['My brother [is learning] (learn) to drive this month.','The weather [is getting] (get) hotter.']);
+add(2,'gram',[
+ {title:'was born · Wh- questions',ex:['I **was born** in 2011.','**Where were** you **born**? – I **was born** in Nonthaburi.','**Why was** she late? – Because the bus **was** late.','**Could** you **swim** when you were six? – Yes, I **could**.'],
+  qs:['“เกิด” ใช้ → [was / were born] (✗ I born)','Wh- + [was / were] + ประธาน …?','Short answer: Yes, I [could]. / No, I [couldn’t].'],tip:'<b>was/were born</b> + in + ปี/สถานที่ · on + วันที่'}],
+ ['My parents [were born] (born) in Bangkok.','Where [were] you yesterday? – I [was] at home.']);
+add(2,'gram2',[
+ {title:'Negatives, questions & Wh- questions',table:{head:['','ตัวอย่าง','กฎ'],rows:[['➖','I **didn’t go** out.','didn’t + **V1**'],['❓','**Did** you **see** it? – Yes, I **did**.','Did + S + **V1**'],['Wh-','**Where did** you **go**? **What did** she **buy**?','Wh- + did + S + V1']]},
+  qs:['หลัง did / didn’t ใช้ → [V1] (✗ didn’t went)','When [did] you [arrive] (arrive)?'],tip:'มี did แล้ว กริยาหลักกลับเป็น <b>ช่องที่ 1</b> เสมอ'},
+ {title:'Past time words',ex:['I saw him **two days ago**.','We moved here **in 2020**.','She called **last night**.','They visited us **yesterday morning**.'],
+  qs:['ระยะเวลา + [ago] (three years ago)','last + [week / month / year / night]','in + [ปี / เดือน] · on + [วัน]'],tip:'มีคำเหล่านี้ → ใช้ <b>Simple past</b>'}],
+ ['What [did] you [do] (do) last weekend?','I [didn’t see] (not see) the movie.','We went to Phuket two years [ago].']);
+add(3,'gram',[
+ {title:'Setting the scene',ex:['It **was raining** and people **were hurrying** home.','The birds **were singing** and the sun **was shining**.'],
+  qs:['ใช้ Past progressive บรรยาย → [ฉาก/บรรยากาศ] ตอนเริ่มเล่าเรื่อง','ประโยค 2 ส่วนเชื่อมด้วย [and]'],tip:'เริ่มเรื่องเล่าด้วย Past progressive → แล้วต่อด้วยเหตุการณ์ (Simple past)'}],
+ ['It [was snowing] (snow) and the children [were playing] (play) outside.']);
+add(3,'gram2',[
+ {title:'Two long actions: while + while',ex:['**While** I **was cooking**, my sister **was watching** TV.','My dad **was reading** **while** my mom **was working**.'],
+  qs:['สองเหตุการณ์ยาวเกิดพร้อมกัน → ใช้ [Past progressive] ทั้งคู่','เชื่อมด้วย → [while]'],tip:'ยาว + ยาว = <b>while</b> · ยาว + สั้นแทรก = <b>when</b>'},
+ {title:'What were you doing when …?',ex:['What **were** you **doing when** the lights **went** out?','– I **was having** a shower.'],
+  qs:['ถาม: What + [was / were] + S + doing + when + [V2] …?','ตอบด้วย → [was / were + V-ing]']}],
+ ['While Tom [was sleeping] (sleep), his brother [was playing] (play) games.','What [were] you [doing] (do) when I called?']);
+add(4,'gram',[
+ {title:'a few · a little · How much / How many',table:{head:['','นับได้','นับไม่ได้'],rows:[['บางส่วน (น้อย)','**a few** apples','**a little** milk'],['มาก','**many** / a lot of apples','**much** / a lot of milk'],['คำถาม','**How many** apples?','**How much** milk?'],['ตอบสั้น','**Not many.**','**Not much.**']]},
+  qs:['a few + [นามนับได้พหูพจน์]','a little + [นามนับไม่ได้]','How much [is] it? = ถามราคา'],tip:'much ใช้ในประโยค <b>ปฏิเสธ/คำถาม</b> เป็นหลัก · ประโยคบอกเล่าใช้ <b>a lot of</b>'}],
+ ['I have [a few] friends in Chiang Mai.','There’s [a little] water in the bottle.','How [many] eggs do we need?']);
+add(4,'gram2',[
+ {title:'much + comparative · less',ex:['A bike is **much cheaper** than a car.','This phone is **a bit more expensive**.','Walking is **less tiring** than running.'],
+  qs:['เน้นว่าต่างกันมาก → [much / a lot] + comparative','ต่างกันนิดหน่อย → [a bit] + comparative','ตรงข้ามของ more → [less]'],tip:'✗ very cheaper → ✓ <b>much</b> cheaper'}],
+ ['Planes are [much faster] (much / fast) than buses.','This game is [less] interesting than that one.']);
+add(5,'gram',[
+ {title:'How sure? probably · definitely · might not',ex:['I**’ll probably** go to university.','We **will definitely** use robots.','It **might not** rain tomorrow.','People **probably won’t** use cash.'],
+  qs:['ตำแหน่ง probably/definitely: [หลัง will] แต่ [ก่อน won’t]','might not = [อาจจะไม่]'],tip:'definitely 100% → probably 80% → might 50% → probably won’t → definitely won’t'},
+ {title:'will for offers, promises & quick decisions',ex:['I**’ll** help you with your bag.','I **won’t** tell anyone. I promise!','“It’s hot.” – “I**’ll** open the window.”'],
+  qs:['เสนอช่วยเหลือ ใช้ → [will]','สัญญา ใช้ → [will / won’t]']}],
+ ['I [’ll probably] stay home this weekend. (probably)','It [might not] be sunny tomorrow.']);
+add(5,'gram2',[
+ {title:'if or when?',ex:['**If** it rains, we’ll stay home. (อาจจะตก)','**When** I get home, I’ll call you. (กลับบ้านแน่นอน)'],
+  qs:['เหตุการณ์ที่อาจเกิด → [if]','เหตุการณ์ที่จะเกิดแน่นอน → [when]','หลัง when (อนาคต) ใช้ → [present simple] ไม่ใช้ will'],tip:'✗ When I <s>will</s> finish … → ✓ When I <b>finish</b> …'},
+ {title:'Other words in the result: can · might · imperative',ex:['If you finish early, you **can** go home.','If it’s cold, you **might** need a jacket.','If you see Tom, **tell** him to call me.'],
+  qs:['ส่วนผลลัพธ์ใช้ได้ทั้ง [will / can / might] + V1','หรือใช้ประโยคคำสั่ง (imperative) เช่น [tell / please call]']}],
+ ['[When] I finish my homework, I’ll play games.','If you’re tired, you [can] sit here.']);
+add(6,'gram',[
+ {title:'just · already · yet',table:{head:['คำ','ความหมาย','ตำแหน่ง','ตัวอย่าง'],rows:[['**just**','เพิ่งจะ','have + just + V3','I**’ve just** finished my homework.'],['**already**','แล้ว (เร็วกว่าที่คิด)','have + already + V3','She**’s already** eaten lunch.'],['**yet** (–)','ยัง (ไม่)','ท้ายประโยคปฏิเสธ','I **haven’t** done it **yet**.'],['**yet** (?)','…หรือยัง','ท้ายคำถาม','**Have** you finished **yet**?']]},
+  qs:['just / already อยู่ระหว่าง [have/has] กับ [V3]','yet ใช้กับ [ประโยคปฏิเสธ และคำถาม] วางไว้ [ท้ายประโยค]'],tip:'already = บอกเล่า · yet = ปฏิเสธ/คำถาม'},
+ {title:'just / already / yet in use',ex:['“Is Mai here?” – “No, she**’s just** left.”','“Do you want to see this film?” – “No, I**’ve already** seen it.”','“**Have** you **done** your homework **yet**?” – “No, not **yet**.”'],
+  qs:['เพิ่งเกิดเมื่อครู่ → [just]','ทำไปแล้ว (ไม่ต้องทำอีก) → [already]','ยังไม่ได้ทำ / ถามว่าทำหรือยัง → [yet]']},
+ {title:'How many times? once · twice · …',ex:['I’ve been to Phuket **twice**.','She’s seen that movie **three times**.','**How many times** have you flown? – **Once**.'],
+  qs:['1 ครั้ง [once] · 2 ครั้ง [twice] · 3 ครั้งขึ้นไป [three times / many times]','ถามจำนวนครั้ง → [How many times] have you …?']}],
+ ['I’ve [just] finished lunch. I’m full!','Have you cleaned your room [yet]?','She hasn’t called me [yet].','We’ve [already] seen this movie. Let’s watch another one.','I’ve been to Japan [twice].']);
+add(6,'gram2',[
+ {title:'before · in my life · the first time',ex:['Have you ever been here **before**?','I’ve **never** seen snow **in my life**.','It’s **the first time** I’ve eaten durian.'],
+  qs:['before (ก่อนหน้านี้) วาง → [ท้ายประโยค]','It’s the first time + [I have + V3]']}],
+ ['Have you been to this café [before]?']);
+add(7,'gram',[
+ {title:'recently · lately · so far · this year',ex:['I**’ve read** three books **so far** this month.','Have you seen Ben **recently**?','We **haven’t had** much rain **this year**.'],
+  qs:['ช่วงเวลาที่ยังไม่จบ (this week/month/year) ใช้ → [Present perfect]','recently / lately = [เมื่อเร็ว ๆ นี้] · so far = [จนถึงตอนนี้]'],tip:'this year ยังไม่จบ → Present perfect · last year จบแล้ว → Simple past'},
+ {title:'still · How long … ? answers',ex:['“How long have you lived here?” – “**For** five years.” / “**Since** 2021.”','I **still** live in the same house.'],
+  qs:['ตอบ How long ด้วย [for + ช่วงเวลา] หรือ [since + จุดเริ่ม]','still = [ยังคง] วางหน้ากริยาหลัก']}],
+ ['I’ve watched two movies [so far] this week.','Have you seen Mai [recently]?']);
+add(7,'gram2',[
+ {title:'gone/been vs went · just vs ago',ex:['I**’ve just** bought a new phone. (เพิ่งซื้อ)','I **bought** it **two days ago**. (บอกเวลา)','“Where’s Tom?” – “He**’s gone** home.” / “He **went** home at 3.”'],
+  qs:['มีเวลาที่ผ่านมาแล้วชัดเจน → [Simple past]','ไม่บอกเวลา / เพิ่งเกิด → [Present perfect]']}],
+ ['I [lost] (lose) my bag yesterday.','I [’ve just found] (just / find) it!']);
+add(8,'gram',[
+ {title:'had to · will have to',ex:['Yesterday I **had to** clean my room.','**Did** you **have to** wear a uniform? – Yes, I **did**.','Tomorrow we**’ll have to** get up early.'],
+  qs:['อดีตของ have to / has to → [had to]','ปฏิเสธอดีต → [didn’t have to]','อนาคต → [will have to]'],tip:'must ไม่มีรูปอดีต → ใช้ <b>had to</b>'}],
+ ['Last night I [had to] do the dishes.','We [didn’t have to] go to school on Monday. It was a holiday.']);
+add(8,'gram2',[
+ {title:'Predictions: going to (evidence) vs will (opinion)',ex:['Look at those clouds! It**’s going to** rain.','I think it **will** rain tomorrow.','Be careful! You**’re going to** fall!'],
+  qs:['เห็นหลักฐานตรงหน้า → [be going to]','ความคิดเห็น/คาดเดา (I think …) → [will]'],tip:'แผน + หลักฐาน → going to · ตัดสินใจทันที + ความคิดเห็น → will'}],
+ ['Look at the sky! It [’s going to] rain.','I think you [’ll] like this book.']);
+})(window.TEACH_GD_MORE,window.TEACH_GD_PRAC);

@@ -36,7 +36,10 @@ function expandGD(u){
     {const pr=((window.TEACH_GD_PRAC||{})[u.n]||{})[g.sec];if(pr)out.push({sec:g.sec,type:'gaps',gstep:'practice',min:5,title:'Practice: all the rules',sub:nm,kick:'Practice · ฝึกทุกกฎ',items:pr,
       notes:{goal:'ฝึกทุกกฎของเรื่องนี้ (รวมรายละเอียด)',say:['Complete the sentences. Think about the rules.'],do:['ทำในสมุด 3 นาที','สุ่มเลขที่ตอบ แล้วกด → เฉลยทีละข้อ','ข้อที่ผิดเยอะ ย้อนไปดูสไลด์ Rule ที่เกี่ยวข้อง'],ans:pr.map(s=>(s.match(/\[([^\]]+)\]/g)||[]).join(' ')).join(' · ')},tools:['timer','picker']})}
   }
-  u.slides=out.filter(s=>!['read','listen','speak','write'].includes(s.sec));
+  u.slides=out.filter(s=>!['read','listen','speak','write'].includes(s.sec)).flatMap(s=>{
+    if(!['gaps','choose'].includes(s.type)||(s.items||[]).length<=6)return [s];
+    const n=Math.ceil(s.items.length/5),per=Math.ceil(s.items.length/n);
+    return [...Array(n)].map((_,i)=>Object.assign({},s,{title:s.title+' ('+(i+1)+'/'+n+')',items:s.items.slice(i*per,(i+1)*per)}))});
   // vocabulary bank of the unit (cards) for matching
   const vw=[];u.slides.filter(s=>s.type==='cards').forEach(s=>s.items.forEach(c=>{if(c[2]&&!vw.some(x=>x[1]===c[1]))vw.push(c)}));u.vwords=vw;
   // cover goals follow the new focus: vocabulary + grammar + practice/quiz
