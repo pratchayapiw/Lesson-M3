@@ -59,7 +59,7 @@ function expandWB(u){const W=(window.TEACH_WB||{})[u.n];if(!W)return;
     notes:{goal:'ฝึกไวยากรณ์ของหน่วยแบบเดียวกับแบบฝึกหัดท้ายเล่ม',say:['Do exercise '+'ABCD'[i]+' in your notebook. You have three minutes.'],do:['ให้ทำในสมุดหรือใบงาน 3–4 นาที (กดจับเวลา)','สุ่มเลขที่ตอบทีละข้อ แล้วกด → เฉลย','ข้อที่ผิดเยอะ ให้ย้อนไปดูสไลด์ Rule ของเรื่องนั้น'],ans:e.items.map(t=>(t.match(/\[([^\]]+)\]|\{\{[^}]*?([^|{]+)\*[^}]*\}\}/g)||[]).map(x=>x.replace(/\[|\]/g,'').replace(/\{\{.*?([^|{]+)\*.*\}\}/,'$1')).join(', ')).join(' · ')},tools:['timer','picker']}));
   add.push({sec:'quiz',type:'quiz',min:15,title:'Unit '+u.n+' Quiz',sub:'แบบทดสอบย่อย 10 ข้อ · ผ่าน 60%',kick:'แบบทดสอบย่อย',
     notes:{goal:'ประเมินความเข้าใจท้ายหน่วย (คำศัพท์ ไวยากรณ์ และภาษาที่ใช้สื่อสาร)',say:['It’s quiz time! Ten questions. Good luck!'],do:['กด ▶ เริ่มสอบ เพื่อแสดงทีละข้อบนจอ ให้นักเรียนเขียนคำตอบ A–D ในกระดาษ','หรือกด 🖨️ พิมพ์ข้อสอบ เพื่อแจกเป็นกระดาษ (มีเฉลยหน้าสุดท้าย)','เฉลยทีละข้อพร้อมเหตุผล ให้นักเรียนตรวจของตัวเอง แล้วบันทึกคะแนน'],ans:W.quiz.map((q,i)=>(i+1)+' '+'ABCD'[q[2]]).join(' · ')},tools:['quiz','timer']});
-  if(STU0){add.length=0;add.push({sec:'quiz',type:'stest',min:20,title:'แบบฝึก + แบบทดสอบย่อย',sub:'Unit '+u.n+' · ทำเองแล้วกดส่งคำตอบ',kick:'แบบฝึก + แบบทดสอบย่อย'})}
+  {add.length=0;add.push({sec:'quiz',type:'stest',min:20,title:'แบบฝึก + แบบทดสอบย่อย',sub:'Unit '+u.n+' · ทำเองแล้วกดส่งคำตอบ',kick:'แบบฝึก + แบบทดสอบย่อย'})}
   const i=u.slides.findIndex(s=>s.sec==='review');u.slides.splice(i<0?u.slides.length:i,0,...add);u.quiz=W.quiz;u.wb=W.wb;}
 for(const n in U){expandGD(U[n]);expandWB(U[n])}
 const SEC={
@@ -386,7 +386,7 @@ function drawLt(){const t=$('#lt');t.textContent=String(Math.floor(lt/60)).padSt
 
 /* ================= TOOLS ================= */
 let curTool=null;
-function availTools(){return Object.keys(TOOLS).filter(k=>k==='stest'?STU&&(unit.quiz||[]).length:(!STU||['flash','sort','puzzle','scramble','timer'].includes(k))&&(['timer','picker','score'].includes(k)||(k==='quiz'?(unit.quiz||[]).length:unit[k])))}
+function availTools(){return Object.keys(TOOLS).filter(k=>k==='stest'?(unit.quiz||[]).length:(!STU||['flash','sort','puzzle','scramble','timer'].includes(k))&&(['timer','picker','score'].includes(k)||(k==='quiz'?(unit.quiz||[]).length:unit[k])))}
 function buildTools(){
   const av=availTools();unit.toolsCount=av.length;
   $('#tabs').innerHTML=av.map(k=>`<button class="tab" data-tab="${k}">${TOOLS[k]}</button>`).join('');
@@ -583,7 +583,7 @@ async function vcode(s){try{const h=await crypto.subtle.digest('SHA-256',new Tex
 function saveRes(p,q,passed){const key='teach:res:u'+unit.n,r=LS.get(key,{})||{};
   if(!r.practice)r.practice={s:p.s,m:p.m,vocab:p.vocab,vocabMax:p.vocabMax,gram:p.gram,gramMax:p.gramMax};
   const z=r.quiz||{attempts:0};z.attempts++;const cur={s:q.total,m:100,qs:q.s,qm:q.m};if(!z.first)z.first=cur;if(!z.best||q.total>z.best.s)z.best=cur;z.last=cur;z.passed=z.passed||passed;r.quiz=z;LS.set(key,r);return r}
-async function sendRow(p,q,passed,code,ts,attempt){if(!CFG.supabaseUrl||!ME)return 'local';
+async function sendRow(p,q,passed,code,ts,attempt){if(!STU)return 'teacher';if(!CFG.supabaseUrl||!ME)return 'local';
   const row={unit:'unit'+unit.n+'-test',student_name:ME.name,class:ME.cls,student_no:ME.no,kind:'quiz',skill:'all',score:q.total,max_score:100,
     detail:{part:'practice+quiz',total:q.total,quiz:{s:q.s,m:q.m,w:q.qw},code,ts,attempt,passed,practice:{s:p.s,m:p.m,vocab:p.vocab,vocabMax:p.vocabMax,gram:p.gram,gramMax:p.gramMax},wrong:q.wrong.map(w=>w.q).slice(0,10)}};
   try{const x=await fetch(`${CFG.supabaseUrl}/rest/v1/${CFG.table}`,{method:'POST',keepalive:true,headers:{apikey:CFG.supabaseKey,Authorization:`Bearer ${CFG.supabaseKey}`,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(row)});
@@ -591,7 +591,7 @@ async function sendRow(p,q,passed,code,ts,attempt){if(!CFG.supabaseUrl||!ME)retu
 let liveT=null;
 async function submitTest(){const p=T.practice||gradePractice();T.practice=p;const q=gradeQuiz();const qp=q.s/q.m,pp=p.m?p.s/p.m:0;
   const qw=Math.round(qp*WQ*1000)/10,pw=Math.round(pp*WP*1000)/10,total=Math.round((qw+pw)*10)/10,passed=total>=PASS*100;q.total=total;q.qw=qw;q.pw=pw;T.attempt++;
-  const now=new Date(),ts=now.toISOString(),me=ME||{name:'(ไม่ได้ลงชื่อ)',cls:'-',no:'-'};
+  const now=new Date(),ts=now.toISOString(),me=STU&&ME?ME:{name:'ครู (ทดลองทำ · ไม่ส่งคะแนน)',cls:'-',no:'-'};
   const code=await vcode([me.name,me.cls,me.no,unit.n,total,q.s,q.m,ts].join('|'));
   const res=saveRes(p,q,passed);
   const dt=now.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'medium'});
@@ -615,7 +615,7 @@ async function submitTest(){const p=T.practice||gradePractice();T.practice=p;con
   drawTest();if(passed)confetti(140);
   clearInterval(liveT);const tick=()=>{const c=$('#twClock');if(!c){clearInterval(liveT);return}c.textContent=new Date().toLocaleTimeString('th-TH')};tick();liveT=setInterval(tick,1000);
   if(!passed){let n=15;clearInterval(retakeT);retakeT=setInterval(()=>{n--;const c=$('#twCount');if(!c){clearInterval(retakeT);return}c.textContent=n;if(n<=0)startRetake()},1000)}
-  const s=await sendRow(p,q,passed,code,ts,T.attempt);const el=$('#twSent');if(el)el.textContent=s==='sent'?'✅ ส่งคะแนนถึงครูแล้ว':s==='queued'?'📶 ยังส่งไม่ได้ (ไม่มีอินเทอร์เน็ต) ระบบจะลองส่งใหม่':'บันทึกในเครื่องนี้แล้ว'}
+  const s=await sendRow(p,q,passed,code,ts,T.attempt);const el=$('#twSent');if(el)el.textContent=s==='sent'?'✅ ส่งคะแนนถึงครูแล้ว':s==='queued'?'📶 ยังส่งไม่ได้ (ไม่มีอินเทอร์เน็ต) ระบบจะลองส่งใหม่':s==='teacher'?'👩‍🏫 โหมดครู: ทดลองทำ ไม่ส่งคะแนน (นักเรียนจะเห็นหน้านี้เหมือนกันทุกอย่าง)':'บันทึกในเครื่องนี้แล้ว'}
 function startRetake(){clearInterval(retakeT);T.qa=[];T.qi=0;{const d=drawSet();T.order=d.order;T.opt=d.opt}T.stage='quiz';drawTest();const tb=$('.tbody');if(tb)tb.scrollTop=0}
 document.addEventListener('input',e=>{const t=e.target;if(T&&(t.classList.contains('tw-in')||t.classList.contains('tw-sel'))){T.ans[+t.dataset.k]=t.value;const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length}});
 document.addEventListener('change',e=>{const t=e.target;if(T&&t.classList.contains('tw-sel')){T.ans[+t.dataset.k]=t.value;const s=$('.tw-top span');if(s)s.textContent='ตอบแล้ว '+answered()+'/'+T.items.length}});
@@ -669,16 +669,16 @@ document.addEventListener('click',e=>{const t=e.target;if(!unit)return;
   if(t.id==='qzAgain'){initQuiz();return}
   if(t.id==='qzPrint'){printQuiz();return}
 });
-function printQuiz(){const Q=pickQuiz(10);const w=window.open('','_blank');if(!w){alert('เบราว์เซอร์บล็อกหน้าต่างใหม่ กรุณาอนุญาต pop-up');return}
+function printQuiz(){const Q=pickQuiz(10);let fr=document.getElementById('printFrame');if(!fr){fr=document.createElement('iframe');fr.id='printFrame';fr.style.cssText='position:fixed;width:0;height:0;border:0;right:0;bottom:0';document.body.appendChild(fr)}const w={document:fr.contentWindow.document};
   const st=s=>String(s).replace(/\*\*/g,'');
   w.document.write(`<!doctype html><meta charset="utf-8"><title>Unit ${unit.n} Quiz</title><style>body{font-family:Sarabun,Tahoma,sans-serif;max-width:760px;margin:30px auto;padding:0 20px;font-size:17px;line-height:1.5}h1{font-size:24px;margin:0}.hd{display:flex;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:8px;margin-bottom:14px}ol>li{margin:0 0 12px}.op{display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;margin-top:4px}.key{page-break-before:always}</style>
   <div class="hd"><div><h1>Unit ${unit.n} ${unit.title} – Quiz</h1>Get Involved! M3 · อ23102</div><div>ชื่อ ..............................<br>ชั้น ......... เลขที่ ......... คะแนน ...... / ${Q.length}</div></div>
   <ol>${Q.map(q=>`<li>${st(q[0])}<div class="op">${q[1].map((o,i)=>`<span>${'abcd'[i]}) ${st(o)}</span>`).join('')}</div></li>`).join('')}</ol>
-  <div class="key"><h1>เฉลย Unit ${unit.n}</h1><ol>${Q.map(q=>`<li><b>${'abcd'[q[2]]}</b> ${st(q[1][q[2]])} — ${q[3]||''}</li>`).join('')}</ol></div><script>setTimeout(()=>print(),400)<\/script>`);w.document.close()}
+  <div class="key"><h1>เฉลย Unit ${unit.n}</h1><ol>${Q.map(q=>`<li><b>${'abcd'[q[2]]}</b> ${st(q[1][q[2]])} — ${q[3]||''}</li>`).join('')}</ol></div>`);w.document.close();setTimeout(()=>{try{fr.contentWindow.focus();fr.contentWindow.print()}catch(e){}},400)}
 
 /* media */
 function initMedia(){const m=unit.media;if(!m)return;const key='teach:media:u'+unit.n;const done=LS.get(key,{});
-  const row=(x,k)=>`<label class="mi ${done[k]?'done':''}"><input type="checkbox" data-k="${k}" ${done[k]?'checked':''}><div><div class="mt">${x[0]}</div><div class="md">${x[1]}</div>${x[2]?`<a class="open" href="${x[2]}" target="_blank" rel="noopener">เปิด ↗</a>`:''}</div></label>`;
+  const row=(x,k)=>`<label class="mi ${done[k]?'done':''}"><input type="checkbox" data-k="${k}" ${done[k]?'checked':''}><div><div class="mt">${x[0]}</div><div class="md">${x[1]}</div>${x[2]?`<a class="open" href="${x[2]}">เปิด ↗</a>`:''}</div></label>`;
   $('#mHand').innerHTML=m.hand.map((x,i)=>row(x,'h'+i)).join('');$('#mOnline').innerHTML=m.online.map((x,i)=>row(x,'o'+i)).join('');
   const prog=()=>{const d=LS.get(key,{});const n=Object.values(d).filter(Boolean).length;$('#mProg').textContent=`เตรียมแล้ว ${n} / ${m.hand.length+m.online.length} รายการ`};prog();
   $('#t-media').onchange=e=>{const k=e.target.dataset.k;if(!k)return;const d=LS.get(key,{});d[k]=e.target.checked;LS.set(key,d);e.target.closest('.mi').classList.toggle('done',e.target.checked);prog()};

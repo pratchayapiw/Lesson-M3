@@ -215,7 +215,7 @@ function viewHome() {
         <div style="flex:1;min-width:0"><b>Unit ${cur.n}: ${cur.t}</b><small>${esc(cur.th)}</small><div class="bar"><i style="width:${Math.round(goals.filter(g => g[3]).length / goals.length * 100)}%"></i></div><small style="color:var(--muted)">${me ? (rc.quiz && rc.quiz.passed ? "สอบย่อยผ่านแล้ว ✅" : "ยังไม่ได้สอบผ่าน") : "เลือกผู้ใช้งานก่อนเริ่ม"}</small></div>
         <a class="go" href="${me ? "teach/#u" + cur.n : "#login"}" aria-label="เรียนต่อ">▶</a></div></div>`;
   const mid = role === "teacher"
-    ? `<div class="card"><h3>🎯 สอนวันนี้ · Unit 6</h3><ul class="goals">${[["vocab","🔤","คำศัพท์"],["gram","🧩","ไวยากรณ์ 1 (ถามนำ → ค้นพบกฎ)"],["gram2","🧩","ไวยากรณ์ 2"],["wb","📒","แบบฝึก"],["quiz","📝","แบบทดสอบย่อย"]].map(([s, ic, t]) => `<li><span class="ck">${ic}</span><a href="teach/#u6/${s}">${t}</a></li>`).join("")}</ul></div>`
+    ? `<div class="card"><h3>🎯 สอนวันนี้ · Unit 6</h3><ul class="goals">${[["vocab","🔤","คำศัพท์"],["gram","🧩","ไวยากรณ์ 1 (ถามนำ → ค้นพบกฎ)"],["gram2","🧩","ไวยากรณ์ 2"],["quiz","📝","แบบฝึก + แบบทดสอบย่อย"]].map(([s, ic, t]) => `<li><span class="ck">${ic}</span><a href="teach/#u6/${s}">${t}</a></li>`).join("")}</ul></div>`
     : `<div class="card"><h3>🎯 Today's Goals · Unit ${cur.n}</h3><ul class="goals">${goals.map(([s, ic, t, ok]) => `<li class="${ok ? "y" : ""}"><span class="ck">${ok ? "✓" : ic}</span><a href="${me ? "teach/#u" + cur.n + "/" + s : "#login"}">${t}</a></li>`).join("")}</ul></div>`;
   const right = role === "teacher"
     ? `<div class="card"><h3>📊 สรุปคะแนนนักเรียน</h3><p style="margin:4px 0 10px">คะแนนแบบฝึก และแบบทดสอบย่อย (ผ่าน 60%) ของทุกหน่วย แยกห้อง เรียงเลขที่</p><a class="btn p" href="scores.html">เปิดสรุปคะแนน →</a></div>`
