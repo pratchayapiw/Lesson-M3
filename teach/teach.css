@@ -665,3 +665,7 @@ html.stu #notesBtn,html.stu .clock{display:none}
 
 .glist:has(.gitem:nth-child(5)) .gitem{font-size:33px;padding:10px 22px}
 .glist:has(.gitem:nth-child(5)){gap:12px}
+
+.pk-guide{display:block;margin-top:14px;background:#fff;border:2px dashed #f3a9bf;border-radius:18px;padding:12px 18px;color:var(--rose-d);text-decoration:none;font:400 16px Kanit,sans-serif}
+.pk-guide b{font-weight:600}
+.pk-guide.new{border-style:solid;background:#fff8e1;border-color:#e7a21d;animation:glow 1.6s ease-in-out infinite}

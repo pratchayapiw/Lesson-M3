@@ -7,15 +7,15 @@
   let teacher=false,me=null;
   try{teacher=sessionStorage.getItem('m3:t')==='1'}catch(e){}
   try{me=JSON.parse(localStorage.getItem('m3:me')||'null')}catch(e){}
-  const I={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',units:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+  const I={book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/>',home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',units:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
     slides:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M10 8l4 2-4 2z"/>',prog:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',test:'<path d="M9 11l3 3 8-8M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/>'};
   const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
   const items=EMBED
     ?[['teach','#','slides','สไลด์สอน 8 หน่วย'],['hr'],['site',R,'home','เปิดเว็บไซต์เต็ม ↗']]
     :teacher
-    ?[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียน / สไลด์สอน'],['scores',R+'scores.html','prog','สรุปคะแนนนักเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
-    :[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียนทุกหน่วย'],['progress',R+'teach/#progress','prog','My Progress'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
+    ?[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียน / สไลด์สอน'],['scores',R+'scores.html','prog','สรุปคะแนนนักเรียน'],['guide',R+'guide.html','book','คำแนะนำการเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']]
+    :[['home',R+'index.html#home','home','Home'],['teach',R+'teach/','slides','บทเรียนทุกหน่วย'],['progress',R+'teach/#progress','prog','My Progress'],['guide',R+'guide.html','book','คำแนะนำการเรียน'],['hr'],['user',R+'index.html#login','user','ผู้ใช้งาน']];
   if(EMBED)teacher=true;
   const name=teacher?'Kru Pratchaya':me?me.name:'เลือกผู้ใช้งาน';
   const av=teacher?'KP':me?String(me.name).trim().slice(0,2):'?';

@@ -126,6 +126,7 @@ function showPicker(){
   document.title=STU?'บทเรียน ม.3 · Get Involved! M3':'Teaching Hub · Get Involved! M3';
   if(STU){const b=$('.pk-banner h1');if(b)b.innerHTML='บทเรียน ม.3 <span>Get Involved! M3</span>';const tg=$('.pk-banner .tagline');if(tg)tg.innerHTML='<b>เลือกหน่วยการเรียนรู้</b><small>เรียนจากสไลด์ ฟังเสียง ทำแบบฝึกท้ายเล่ม และสอบย่อยท้ายหน่วย</small>';
     drawProgress()}
+  try{const g=$('#pkGuide');if(g&&STU&&!localStorage.getItem('m3:guideSeen')){g.classList.add('new');g.firstChild.textContent='👋 ครั้งแรก? อ่านก่อนเริ่ม: '}}catch(e){}
   const g=$('#pkGrid');
   g.innerHTML=Object.keys(U).sort((a,b)=>a-b).map(n=>{const u=U[n];return `
    <button class="pk-card" data-u="${n}" style="--uc:${u.color};--ubg:${u.light}">
