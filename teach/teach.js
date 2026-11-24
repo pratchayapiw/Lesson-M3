@@ -9,6 +9,8 @@ const A=window.TEACH_ASSETS||'../assets/';
 const PAL={1:['#e2457a','#ffe3ee'],2:['#e8763a','#ffe6d2'],3:['#e7a21d','#fff1c9'],4:['#8b5cd6','#ece0ff'],5:['#4f9b3a','#e2f4d7'],6:['#3a7fd0','#dceeff'],7:['#d9467a','#ffe0ec'],8:['#3a8fd0','#dcefff']};
 for(const n in U){if(PAL[n]){U[n].color=PAL[n][0];U[n].light=PAL[n][1]}}
 const IMG=n=>A+'icons/unit'+n+'.png';
+const PDFN={1:'Stories',2:'Then-and-Now',3:'Goals',4:'Spend',5:'A-Better-Place',6:'Experience',7:'My-Stuff',8:'Responsibility'};
+const PDF=n=>(window.TEACH_ASSETS?'https://pratchayapiw.github.io/Lesson-M3/teach/':'')+'pdf/M3-Unit'+n+'-'+PDFN[n]+'.pdf';
 /* ---- Grammar: Question → Guided discovery stages ---- */
 const GSTEPS=[['q','❓','Question'],['notice','👀','Notice'],['compare','⚖️','Compare'],['meaning','💡','Meaning'],['detect','🚨','Detective'],['rule','🧩','Rule'],['practice','✍️','Practice']];
 function expandGD(u){
@@ -128,11 +130,11 @@ function showPicker(){
     drawProgress()}
   try{const g=$('#pkGuide');if(g&&STU&&!localStorage.getItem('m3:guideSeen')){g.classList.add('new');g.firstChild.textContent='👋 ครั้งแรก? อ่านก่อนเริ่ม: '}}catch(e){}
   const g=$('#pkGrid');
-  g.innerHTML=Object.keys(U).sort((a,b)=>a-b).map(n=>{const u=U[n];return `
+  g.innerHTML=Object.keys(U).sort((a,b)=>a-b).map(n=>{const u=U[n];return `<div class="pk-item">
    <button class="pk-card" data-u="${n}" style="--uc:${u.color};--ubg:${u.light}">
      <div class="pk-art"><span class="pk-term">เทอม ${u.term}</span><img src="${IMG(n)}" alt=""><span class="pk-pill">Unit ${n}</span></div>
      <div class="pk-body"><h3>${u.title}</h3><div class="th">${u.th}</div><div class="g">${u.gram}</div><div class="n">📽️ ${u.slides.length} สไลด์ · 🧰 เครื่องมือ ${3+['flash','sort','detect','puzzle','scramble','media'].filter(k=>u[k]).length} ชุด</div></div>
-   </button>`}).join('');
+   </button><a class="pk-dl" href="${PDF(n)}" download>📥 ดาวน์โหลดสไลด์ Unit ${n} (PDF)</a></div>`}).join('');
   g.onclick=e=>{const b=e.target.closest('.pk-card');if(b)location.hash='u'+b.dataset.u};
 }
 
@@ -143,7 +145,7 @@ function openUnit(n,s){
   document.title=`Unit ${n} ${unit.title} · Teaching Hub`;
   const r=document.documentElement.style;
   r.setProperty('--u',unit.color);r.setProperty('--u2',unit.light);
-  $('#brandT').innerHTML=`${unit.art[0]} Unit ${n} · ${unit.title} <small>${unit.th}</small>`;
+  $('#brandT').innerHTML=`${unit.art[0]} Unit ${n} · ${unit.title} <small>${unit.th}</small>`;{const d=$('#dlBtn');if(d){d.href=PDF(n);d.setAttribute('download','')}}
   // phases
   const secs=[];unit.slides.forEach((sl,i)=>{if(!secs.find(x=>x.k===sl.sec))secs.push({k:sl.sec,i})});
   unit._secs=secs;

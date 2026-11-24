@@ -1,5 +1,5 @@
 TEACH_UNITS[6]={n:6,title:'Experience',th:'ประสบการณ์',term:2,
-gram:'Present perfect · ever / never · been / gone · who / where / which',
+gram:'Present perfect · just / already / yet · ever / never · been / gone',
 color:'#2f6fc4',light:'#dceeff',bar:'#16325c',bg:'linear-gradient(135deg,#dceeff,#fff3d6)',
 art:['🪂','🎸','🌍','🐬','🏰'],fx:['✈️','⭐','🎵','🌍','🎈'],
 slides:[
