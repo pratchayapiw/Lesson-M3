@@ -10,7 +10,14 @@ const PAL={1:['#e2457a','#ffe3ee'],2:['#e8763a','#ffe6d2'],3:['#e7a21d','#fff1c9
 for(const n in U){if(PAL[n]){U[n].color=PAL[n][0];U[n].light=PAL[n][1]}}
 const IMG=n=>A+'icons/unit'+n+'.png';
 const PDFN={1:'Stories',2:'Then-and-Now',3:'Goals',4:'Spend',5:'A-Better-Place',6:'Experience',7:'My-Stuff',8:'Responsibility'};
-const PDF=n=>(window.TEACH_ASSETS?'https://pratchayapiw.github.io/Lesson-M3/teach/':'')+'pdf/M3-Unit'+n+'-'+PDFN[n]+'.pdf';
+const PDF=n=>'pdf/M3-Unit'+n+'-'+PDFN[n]+'.pdf';
+/* in the Claude preview copy, files are saved through the viewer's download prompt */
+if(window.TEACH_ASSETS){const toast=m=>{let t=document.getElementById('dlToast');if(!t){t=document.createElement('div');t.id='dlToast';t.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#3a2330;color:#fff;padding:10px 16px;border-radius:12px;font:500 15px Kanit,sans-serif;z-index:200;max-width:90vw;text-align:center';document.body.appendChild(t)}t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',4000)};
+  document.addEventListener('click',async e=>{const a=e.target.closest('a[download]');if(!a||!a.getAttribute('href')||a.getAttribute('href')==='#')return;e.preventDefault();e.stopPropagation();
+    try{const dl=window.claude&&await window.claude.use('downloads');if(!dl){toast('ดาวน์โหลดไม่ได้ในหน้านี้ ใช้เว็บ pratchayapiw.github.io/Lesson-M3 แทน');return}
+      toast('กำลังเตรียมไฟล์…');const href=a.getAttribute('href');const blob=await (await fetch(href)).blob();
+      await dl.save({filename:href.split('/').pop(),data:blob});toast('✅ บันทึกไฟล์แล้ว')}
+    catch(er){toast(er&&er.code==='declined'?'ยกเลิกการดาวน์โหลด':'ดาวน์โหลดไม่สำเร็จ ลองใหม่อีกครั้ง')}},true)}
 /* ---- Grammar: Question → Guided discovery stages ---- */
 const GSTEPS=[['q','❓','Question'],['notice','👀','Notice'],['compare','⚖️','Compare'],['meaning','💡','Meaning'],['detect','🚨','Detective'],['rule','🧩','Rule'],['practice','✍️','Practice']];
 function expandGD(u){
